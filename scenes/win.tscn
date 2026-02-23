@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://cnpjefp87c03p"]
+
+[ext_resource type="Texture2D" uid="uid://bhfn73xm75inj" path="res://assets/win.png" id="1_r4oei"]
+[ext_resource type="Script" uid="uid://b58iwhhdoafr0" path="res://scenes/win.gd" id="2_826fv"]
+
+[node name="TextureRect" type="TextureRect" unique_id=1544977021]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("1_r4oei")
+script = ExtResource("2_826fv")
+
+[node name="Label" type="Label" parent="." unique_id=687022133]
+layout_mode = 0
+offset_left = 1587.0
+offset_top = 557.0
+offset_right = 1932.0
+offset_bottom = 696.5833
+theme_override_colors/font_color = Color(0.22204623, 0.22531208, 0.2100484, 1)
+theme_override_font_sizes/font_size = 100
+
+[node name="Label2" type="Label" parent="." unique_id=1970137688]
+layout_mode = 0
+offset_left = 1524.0
+offset_top = 839.0
+offset_right = 1736.0
+offset_bottom = 1285.6667
+theme_override_colors/font_color = Color(0.17066088, 0.19383806, 0.13778722, 1)
+theme_override_font_sizes/font_size = 320
+text = "A"
+
+[node name="Timer" type="Timer" parent="." unique_id=402785204]
+wait_time = 5.0
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

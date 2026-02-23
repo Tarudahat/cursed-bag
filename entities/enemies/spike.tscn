@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://cpykqgcjwd86p"]
+
+[ext_resource type="Script" uid="uid://gnp3p2d3ii72" path="res://entities/enemies/spike.gd" id="1_kbnbe"]
+
+[sub_resource type="Gradient" id="Gradient_kbnbe"]
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ec2xc"]
+gradient = SubResource("Gradient_kbnbe")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_kbnbe"]
+size = Vector2(96, 96)
+
+[node name="spikes" type="Area2D" unique_id=1062007027]
+scale = Vector2(1, 1.0164224)
+collision_layer = 2
+script = ExtResource("1_kbnbe")
+dmg = null
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1937926885]
+scale = Vector2(1.4837997, 1.4911877)
+texture = SubResource("GradientTexture2D_ec2xc")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1111292052]
+shape = SubResource("RectangleShape2D_kbnbe")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]

@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://be3h7pn5re7ux"]
+
+[ext_resource type="Script" uid="uid://d3yh20fq7q8g8" path="res://entities/enemies/caster.gd" id="1_c1o6b"]
+[ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="2_mgqau"]
+[ext_resource type="Texture2D" uid="uid://bkh6pyj77qtmb" path="res://assets/caster.png" id="3_mgqau"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_nqo0b"]
+radius = 112.0
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_62uum"]
+resource_local_to_scene = true
+shader = ExtResource("2_mgqau")
+shader_parameter/enabled = false
+shader_parameter/speed = 10.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_mgqau"]
+radius = 696.1839
+
+[node name="mage" type="CharacterBody2D" unique_id=1012179225]
+motion_mode = 1
+slide_on_ceiling = false
+script = ExtResource("1_c1o6b")
+hp = 30
+metadata/_custom_type_script = "uid://2g8pj2nuvxjr"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1741239435]
+shape = SubResource("CircleShape2D_nqo0b")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=261676458]
+material = SubResource("ShaderMaterial_62uum")
+rotation = 0.09250245
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("3_mgqau")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1028337766]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=623904630]
+shape = SubResource("CircleShape2D_mgqau")
+
+[node name="shotcooldown" type="Timer" parent="." unique_id=698997469]
+wait_time = 0.2
+
+[node name="tp_cooldown" type="Timer" parent="." unique_id=2112454873]
+wait_time = 5.0
+
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="timeout" from="shotcooldown" to="." method="_on_shotcooldown_timeout"]
+[connection signal="timeout" from="tp_cooldown" to="." method="_on_tp_cooldown_timeout"]

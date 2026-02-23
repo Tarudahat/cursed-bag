@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://bocsxpr5ved0d"]
+
+[ext_resource type="Script" uid="uid://cmqlxv7qhcj1w" path="res://scenes/hp_pot.gd" id="1_l4j1e"]
+[ext_resource type="Texture2D" uid="uid://cbpmsa6p15dr7" path="res://assets/hp_pot.png" id="2_6medn"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6medn"]
+
+[node name="hp_pot" type="Area2D" unique_id=1844268742]
+script = ExtResource("1_l4j1e")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1559200830]
+scale = Vector2(12.88, 19.240002)
+shape = SubResource("RectangleShape2D_6medn")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=929714004]
+scale = Vector2(0.75, 0.75)
+texture = ExtResource("2_6medn")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

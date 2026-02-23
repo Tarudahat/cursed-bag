@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://cnspe0k2s4d5m"]
+
+[ext_resource type="Script" uid="uid://dr5grlyueusox" path="res://entities/enemies/bullet.gd" id="1_5a0gh"]
+[ext_resource type="Texture2D" uid="uid://djo1ddympoqwa" path="res://assets/bullet.png" id="2_5a0gh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_6r5lk"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_m2gmm"]
+atlas = ExtResource("2_5a0gh")
+region = Rect2(0, 0, 300, 300)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ybfbr"]
+atlas = ExtResource("2_5a0gh")
+region = Rect2(300, 0, 300, 300)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_yh8bk"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_m2gmm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ybfbr")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Bullet" type="Area2D" unique_id=1496925911]
+collision_layer = 8
+collision_mask = 9
+script = ExtResource("1_5a0gh")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1026090348]
+scale = Vector2(3.4799998, 1)
+shape = SubResource("RectangleShape2D_6r5lk")
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="." unique_id=2147106095]
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_yh8bk")
+frame_progress = 0.89547956
+speed_scale = 2.5
+
+[node name="Timer" type="Timer" parent="." unique_id=1129778583]
+wait_time = 3.0
+autostart = true
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

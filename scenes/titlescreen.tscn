@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://bc2x88aeeqpns"]
+
+[ext_resource type="Texture2D" uid="uid://dqphvf4ep28qi" path="res://assets/titlescreen.png" id="1_3jj3l"]
+[ext_resource type="Script" uid="uid://khpmaijkn66i" path="res://scenes/titlescreen.gd" id="1_6d6rd"]
+
+[node name="titlescreen" type="TextureRect" unique_id=860765219]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+texture = ExtResource("1_3jj3l")
+script = ExtResource("1_6d6rd")
+
+[node name="Button" type="Button" parent="." unique_id=798728025]
+show_behind_parent = true
+layout_mode = 0
+offset_left = 368.5
+offset_top = 499.5
+offset_right = 1112.5
+offset_bottom = 939.5
+
+[connection signal="pressed" from="Button" to="." method="_on_button_pressed"]

@@ -1,0 +1,38 @@
+[gd_scene format=3 uid="uid://dwkpoebp461do"]
+
+[ext_resource type="Script" uid="uid://kam3uq2n2wkl" path="res://entities/enemies/turret.gd" id="1_h6tj7"]
+[ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="2_aiw5j"]
+[ext_resource type="Texture2D" uid="uid://c6whruhq53rad" path="res://assets/turret.png" id="3_aiw5j"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_k8wxo"]
+resource_local_to_scene = true
+shader = ExtResource("2_aiw5j")
+shader_parameter/enabled = false
+shader_parameter/speed = 10.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_h6tj7"]
+radius = 98.02041
+
+[node name="turret" type="StaticBody2D" unique_id=672909862]
+collision_mask = 0
+script = ExtResource("1_h6tj7")
+hp = 30
+metadata/_custom_type_script = "uid://cv28ldx1jvvp3"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1834845443]
+material = SubResource("ShaderMaterial_k8wxo")
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_aiw5j")
+
+[node name="shoot_pattern_cooldown" type="Timer" parent="." unique_id=543754619]
+wait_time = 5.0
+
+[node name="shoot_wave_cooldown" type="Timer" parent="." unique_id=366503439]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=863749043]
+shape = SubResource("CircleShape2D_h6tj7")
+
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
+[connection signal="timeout" from="shoot_pattern_cooldown" to="." method="_on_shoot_pattern_cooldown_timeout"]
+[connection signal="timeout" from="shoot_wave_cooldown" to="." method="_on_shoot_wave_cooldown_timeout"]

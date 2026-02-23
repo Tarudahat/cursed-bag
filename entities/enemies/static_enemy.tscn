@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://cg41os2dexktb"]
+
+[ext_resource type="Script" uid="uid://cv28ldx1jvvp3" path="res://entities/enemies/static_enemy.gd" id="1_nrspc"]
+
+[node name="StaticEnemy" type="StaticBody2D" unique_id=1348110230]
+script = ExtResource("1_nrspc")
+
+[node name="dmg_timer" type="Timer" parent="." unique_id=1940892644]
+
+[connection signal="timeout" from="dmg_timer" to="." method="_on_dmg_timer_timeout"]

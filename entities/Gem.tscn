@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://5tslfllocxqm"]
+
+[ext_resource type="Script" uid="uid://d3rnt60qwbdi2" path="res://entities/gem.gd" id="1_wf8lw"]
+[ext_resource type="Texture2D" uid="uid://b7u23lau1l57n" path="res://assets/dia1.png" id="2_yhn3m"]
+[ext_resource type="Texture2D" uid="uid://2vmnwlthhucs" path="res://assets/dia2.png" id="3_clwes"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_4t64q"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_yhn3m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_clwes")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_sxoi7"]
+radius = 32.0
+
+[node name="gem" type="Area2D" unique_id=1573775691]
+script = ExtResource("1_wf8lw")
+value = null
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="." unique_id=748315879]
+scale = Vector2(0.488, 0.5)
+sprite_frames = SubResource("SpriteFrames_4t64q")
+frame_progress = 0.5593971
+speed_scale = 3.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1705174582]
+shape = SubResource("CircleShape2D_sxoi7")
+
+[connection signal="area_entered" from="." to="." method="_on_area_entered"]

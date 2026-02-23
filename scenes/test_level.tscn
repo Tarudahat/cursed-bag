@@ -1,0 +1,144 @@
+[gd_scene format=4 uid="uid://pfxsvmyfwab"]
+
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="1_2venv"]
+[ext_resource type="PackedScene" uid="uid://bbxswwnqomvju" path="res://entities/player.tscn" id="2_paw1w"]
+[ext_resource type="PackedScene" uid="uid://dpl2narjj0i7u" path="res://entities/sword_blast.tscn" id="3_j6w7d"]
+[ext_resource type="PackedScene" uid="uid://5tslfllocxqm" path="res://entities/Gem.tscn" id="5_tmr53"]
+[ext_resource type="Texture2D" uid="uid://cmrqjjfkntyew" path="res://assets/tiles.png" id="6_88ety"]
+[ext_resource type="PackedScene" uid="uid://cpykqgcjwd86p" path="res://entities/enemies/spike.tscn" id="6_qcd3b"]
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_qcd3b"]
+texture = ExtResource("6_88ety")
+margins = Vector2i(5, 0)
+texture_region_size = Vector2i(352, 352)
+1:0/0 = 0
+0:0/0 = 0
+0:1/0 = 0
+2:1/0 = 0
+1:1/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+3:1/0 = 0
+4:0/0 = 0
+4:1/0 = 0
+5:0/0 = 0
+5:1/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_7gix3"]
+tile_size = Vector2i(352, 352)
+sources/1 = SubResource("TileSetAtlasSource_qcd3b")
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_2venv"]
+
+[node name="Test_level" type="Node2D" unique_id=152581173]
+
+[node name="TileMapLayer" type="TileMapLayer" parent="." unique_id=1015372443]
+position = Vector2(45, 73)
+scale = Vector2(0.5, 0.5)
+tile_map_data = PackedByteArray("AAACAAAAAQAAAAAAAAAKAAAAAQAEAAAAAAACAAYAAQAAAAEAAAAKAAYAAQAFAAAAAAADAAEAAQACAAEAAAADAAIAAQACAAEAAAADAAMAAQACAAEAAAADAAQAAQACAAEAAAADAAUAAQACAAEAAAAEAAUAAQACAAEAAAAFAAUAAQACAAEAAAAFAAQAAQACAAEAAAAFAAMAAQACAAEAAAAEAAMAAQACAAEAAAAEAAIAAQACAAEAAAAEAAEAAQACAAEAAAAEAAQAAQACAAEAAAAFAAIAAQACAAEAAAAFAAEAAQACAAEAAAAGAAEAAQACAAEAAAAHAAEAAQACAAEAAAAIAAEAAQACAAEAAAAJAAEAAQACAAEAAAAJAAIAAQACAAEAAAAJAAMAAQACAAEAAAAJAAQAAQACAAEAAAAJAAUAAQACAAEAAAAIAAUAAQACAAEAAAAHAAUAAQACAAEAAAAGAAUAAQACAAEAAAAGAAQAAQACAAEAAAAGAAMAAQACAAEAAAAHAAMAAQACAAEAAAAHAAIAAQACAAEAAAAIAAIAAQACAAEAAAAIAAMAAQACAAEAAAAIAAQAAQACAAEAAAAHAAQAAQACAAEAAAAGAAIAAQACAAEAAAAHAAAAAQADAAAAAAAGAAAAAQACAAAAAAALAAAAAQABAAAAAAALAAYAAQABAAEAAAAJAAAAAQAEAAAAAAAIAAAAAQAEAAAAAAAFAAAAAQAEAAAAAAAEAAAAAQAEAAAAAAADAAAAAQAEAAAAAAACAAEAAQAEAAEAAAACAAIAAQAEAAEAAAACAAMAAQAEAAEAAAACAAQAAQAEAAEAAAACAAUAAQAEAAEAAAALAAEAAQAFAAEAAAALAAIAAQAFAAEAAAALAAMAAQAFAAEAAAALAAQAAQAFAAEAAAALAAUAAQAFAAEAAAAJAAYAAQAFAAAAAAAIAAYAAQAFAAAAAAAHAAYAAQAFAAAAAAAGAAYAAQAFAAAAAAAFAAYAAQAFAAAAAAAEAAYAAQAFAAAAAAADAAYAAQAFAAAAAAAKAAIAAQACAAEAAAAKAAEAAQACAAEAAAAKAAMAAQACAAEAAAAKAAQAAQACAAEAAAAKAAUAAQACAAEAAAACAP//AQADAAEAAAADAP//AQADAAEAAAAEAP//AQADAAEAAAAFAP//AQADAAEAAAAGAP//AQADAAEAAAAHAP//AQADAAEAAAAIAP//AQADAAEAAAAJAP//AQADAAEAAAAKAP//AQADAAEAAAALAP//AQADAAEAAAAHAP7/AQADAAAAACAGAP7/AQACAAAAACAIAP7/AQAFAAAAAAAJAP7/AQAFAAAAAAAKAP7/AQAFAAAAAAAFAP7/AQAFAAAAAAAEAP7/AQAFAAAAAAADAP7/AQAFAAAAAAALAP7/AQABAAEAAAACAP7/AQAAAAEAAAACAPf/AQAAAAAAAAAGAPP/AQAAAAAAAAAGAPT/AQAEAAEAAAAGAPX/AQAEAAEAAAAGAPb/AQAEAAEAAAAFAPf/AQAEAAAAAAAEAPf/AQAEAAAAAAADAPf/AQAEAAAAAAAGAPf/AQACAAEAAAADAPj/AQACAAEAAAADAPn/AQACAAEAAAADAPr/AQACAAEAAAADAPv/AQACAAEAAAADAPz/AQACAAEAAAADAP3/AQACAAEAAAAEAP3/AQACAAEAAAAFAP3/AQACAAEAAAAGAP3/AQACAAEAAAAHAP3/AQACAAEAAAAIAP3/AQACAAEAAAAJAP3/AQACAAEAAAAKAP3/AQACAAEAAAAKAPz/AQACAAEAAAAKAPv/AQACAAEAAAAKAPr/AQACAAEAAAAKAPn/AQACAAEAAAAJAPj/AQACAAEAAAAIAPj/AQACAAEAAAAHAPj/AQACAAEAAAAGAPj/AQACAAEAAAAFAPj/AQACAAEAAAAEAPj/AQACAAEAAAAEAPn/AQACAAEAAAAEAPr/AQACAAEAAAAEAPv/AQACAAEAAAAEAPz/AQACAAEAAAAFAPv/AQACAAEAAAAFAPr/AQACAAEAAAAFAPn/AQACAAEAAAAFAPz/AQACAAEAAAAGAPn/AQACAAEAAAAHAPn/AQACAAEAAAAHAPr/AQACAAEAAAAHAPv/AQACAAEAAAAGAPv/AQACAAEAAAAGAPz/AQACAAEAAAAHAPz/AQACAAEAAAAIAPz/AQACAAEAAAAIAPv/AQACAAEAAAAJAPv/AQACAAEAAAAJAPr/AQACAAEAAAAJAPn/AQACAAEAAAAIAPn/AQACAAEAAAAIAPr/AQACAAEAAAAGAPr/AQACAAEAAAAJAPz/AQACAAEAAAA=")
+tile_set = SubResource("TileSet_7gix3")
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=831387265]
+position = Vector2(-525, -185)
+scale = Vector2(1.1744988, 8.536522)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=2040900117]
+scale = Vector2(6.4000006, 6.4)
+shape = SubResource("RectangleShape2D_2venv")
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D" unique_id=19336284]
+modulate = Color(0.5525915, 0.77792126, 0.67663485, 1)
+texture = ExtResource("1_2venv")
+
+[node name="StaticBody2D4" type="StaticBody2D" parent="." unique_id=308617484]
+position = Vector2(-266, -71)
+scale = Vector2(1.1744988, 8.536522)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D4" unique_id=1554697268]
+scale = Vector2(6.4000006, 6.4)
+shape = SubResource("RectangleShape2D_2venv")
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D4" unique_id=1424547724]
+modulate = Color(0.5525915, 0.77792126, 0.67663485, 1)
+texture = ExtResource("1_2venv")
+
+[node name="StaticBody2D3" type="StaticBody2D" parent="." unique_id=1926750673]
+modulate = Color(1, 0.39607844, 0.0627451, 1)
+position = Vector2(341, -266)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D3" unique_id=1365604943]
+scale = Vector2(6.4000006, 6.4)
+shape = SubResource("RectangleShape2D_2venv")
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D3" unique_id=1314460376]
+modulate = Color(0.5525915, 0.77792126, 0.67663485, 1)
+texture = ExtResource("1_2venv")
+
+[node name="StaticBody2D5" type="StaticBody2D" parent="." unique_id=1882150560]
+modulate = Color(1, 0.39607844, 0.0627451, 1)
+position = Vector2(178, -264)
+collision_layer = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D5" unique_id=1090515505]
+scale = Vector2(6.4000006, 6.4)
+shape = SubResource("RectangleShape2D_2venv")
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D5" unique_id=890186177]
+modulate = Color(0.5525915, 0.77792126, 0.67663485, 1)
+texture = ExtResource("1_2venv")
+
+[node name="StaticBody2D2" type="StaticBody2D" parent="." unique_id=706561875]
+position = Vector2(0, 130)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D2" unique_id=587032162]
+scale = Vector2(6.4000006, 6.4)
+shape = SubResource("RectangleShape2D_2venv")
+
+[node name="Sprite2D" type="Sprite2D" parent="StaticBody2D2" unique_id=1166810396]
+modulate = Color(0.5525915, 0.77792126, 0.67663485, 1)
+texture = ExtResource("1_2venv")
+
+[node name="Player" parent="." unique_id=514587461 instance=ExtResource("2_paw1w")]
+position = Vector2(321, -1)
+
+[node name="sword_blast" parent="." unique_id=762263630 instance=ExtResource("3_j6w7d")]
+position = Vector2(-10, -140)
+
+[node name="gem" parent="." unique_id=1573775691 instance=ExtResource("5_tmr53")]
+position = Vector2(1219, 331)
+value = 50
+
+[node name="gem" parent="gem" unique_id=844008956 instance=ExtResource("5_tmr53")]
+position = Vector2(952, 64)
+value = 50
+
+[node name="gem6" parent="." unique_id=969942140 instance=ExtResource("5_tmr53")]
+position = Vector2(1081, -24)
+value = 50
+
+[node name="gem" parent="gem6" unique_id=2027121274 instance=ExtResource("5_tmr53")]
+position = Vector2(952, 64)
+value = 50
+
+[node name="gem2" parent="." unique_id=32563407 instance=ExtResource("5_tmr53")]
+position = Vector2(265, -564)
+
+[node name="gem3" parent="." unique_id=543585232 instance=ExtResource("5_tmr53")]
+position = Vector2(-70, -557)
+
+[node name="gem4" parent="." unique_id=493890278 instance=ExtResource("5_tmr53")]
+position = Vector2(612, -389)
+
+[node name="gem5" parent="." unique_id=60033643 instance=ExtResource("5_tmr53")]
+position = Vector2(750, 280)
+scale = Vector2(-0.032156277, 0.9827555)
+
+[node name="StaticEnemy" parent="." unique_id=1762601060 instance=ExtResource("6_qcd3b")]
+position = Vector2(347, 370)
+dmg = 5
+
+[node name="spikes" parent="." unique_id=635640097 instance=ExtResource("6_qcd3b")]
+position = Vector2(445, -127)
+dmg = 5

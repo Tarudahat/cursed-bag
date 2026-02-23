@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://bluflnt46fryf"]
+
+[ext_resource type="Script" uid="uid://xwu5p6dund6p" path="res://scenes/next_lvl.gd" id="1_3e5mk"]
+[ext_resource type="Texture2D" uid="uid://dhlgjnouyywd2" path="res://assets/exit.png" id="2_3e5mk"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_usoye"]
+radius = 72.0
+
+[node name="Area2D" type="Area2D" unique_id=496307312]
+z_index = 1
+script = ExtResource("1_3e5mk")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=410844065]
+z_index = -1
+scale = Vector2(0.52, 0.52)
+texture = ExtResource("2_3e5mk")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1101241876]
+position = Vector2(0, -8)
+shape = SubResource("CircleShape2D_usoye")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

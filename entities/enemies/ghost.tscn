@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://bb6n5y0j0v61k"]
+
+[ext_resource type="Script" uid="uid://cds4lwpxtoa57" path="res://entities/enemies/ghost.gd" id="1_djdh1"]
+[ext_resource type="Texture2D" uid="uid://cdowqhsrdqt8k" path="res://assets/ghost.png" id="1_j4uan"]
+[ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="2_v78bc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_wuakj"]
+resource_local_to_scene = true
+shader = ExtResource("2_v78bc")
+shader_parameter/enabled = false
+shader_parameter/speed = 10.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_djdh1"]
+atlas = ExtResource("1_j4uan")
+region = Rect2(0, 0, 592, 567)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_v78bc"]
+atlas = ExtResource("1_j4uan")
+region = Rect2(592, 0, 592, 567)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wuakj"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_djdh1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_v78bc")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_v78bc"]
+radius = 88.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_j4uan"]
+radius = 448.0714
+
+[node name="Ghost" type="CharacterBody2D" unique_id=665126917]
+script = ExtResource("1_djdh1")
+metadata/_custom_type_script = "uid://2g8pj2nuvxjr"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1786150918]
+material = SubResource("ShaderMaterial_wuakj")
+position = Vector2(8, -24)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_wuakj")
+frame_progress = 0.14909837
+speed_scale = 2.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1915885704]
+shape = SubResource("CircleShape2D_v78bc")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=660927146]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=100123056]
+shape = SubResource("CircleShape2D_j4uan")
+
+[node name="movement_timer" type="Timer" parent="." unique_id=525274262]
+wait_time = 0.5
+
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="timeout" from="movement_timer" to="." method="_on_movement_timer_timeout"]

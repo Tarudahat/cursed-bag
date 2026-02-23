@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://dod5enhs22n01"]
+
+[ext_resource type="AudioStream" uid="uid://cu4ycyoxyjj1j" path="res://assets/lol.wav" id="1_aevjb"]
+[ext_resource type="Script" uid="uid://bu6qv2rlcbds1" path="res://scenes/sounds.gd" id="1_h5l0e"]
+[ext_resource type="AudioStream" uid="uid://pqwaui7udhbc" path="res://assets/shot.wav" id="2_8b883"]
+[ext_resource type="AudioStream" uid="uid://eo2xvttrv2kp" path="res://assets/sw.wav" id="2_umdxc"]
+[ext_resource type="AudioStream" uid="uid://dx5mb040t6pkt" path="res://assets/Boiler.wav" id="5_4v5pq"]
+
+[node name="Node" type="Node" unique_id=571839848]
+script = ExtResource("1_h5l0e")
+
+[node name="sword" type="AudioStreamPlayer2D" parent="." unique_id=803784654]
+stream = ExtResource("2_umdxc")
+pitch_scale = 5.0
+
+[node name="evil" type="AudioStreamPlayer2D" parent="." unique_id=2004606200]
+stream = ExtResource("1_aevjb")
+pitch_scale = 1.2
+
+[node name="bullet" type="AudioStreamPlayer2D" parent="." unique_id=1271054185]
+stream = ExtResource("2_8b883")
+pitch_scale = 0.5
+max_polyphony = 25
+
+[node name="ghost" type="AudioStreamPlayer2D" parent="." unique_id=2068978163]
+
+[node name="music" type="AudioStreamPlayer" parent="." unique_id=2130268995]
+stream = ExtResource("5_4v5pq")
+volume_db = -10.0
+
+[connection signal="finished" from="music" to="." method="_on_music_finished"]
