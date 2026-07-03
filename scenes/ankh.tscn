@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://drhl5iiy75v7g"]
 
 [ext_resource type="Script" uid="uid://d1ab4lsvpqf13" path="res://scenes/ankh.gd" id="1_00oo7"]
-[ext_resource type="Texture2D" uid="uid://ccga3vqewnvgm" path="res://assets/ankh.png" id="2_6qqjr"]
+[ext_resource type="Texture2D" uid="uid://dgp1kcrvgm3re" path="res://assets/items/ankh.png" id="2_6qqjr"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6qqjr"]
 

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://cnpjefp87c03p"]
 
-[ext_resource type="Texture2D" uid="uid://bhfn73xm75inj" path="res://assets/win.png" id="1_r4oei"]
+[ext_resource type="Texture2D" uid="uid://dwkwibyc12twn" path="res://assets/UI/win.png" id="1_r4oei"]
 [ext_resource type="Script" uid="uid://b58iwhhdoafr0" path="res://scenes/win.gd" id="2_826fv"]
 
 [node name="TextureRect" type="TextureRect" unique_id=1544977021]

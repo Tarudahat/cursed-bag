@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bocsxpr5ved0d"]
 
 [ext_resource type="Script" uid="uid://cmqlxv7qhcj1w" path="res://scenes/hp_pot.gd" id="1_l4j1e"]
-[ext_resource type="Texture2D" uid="uid://cbpmsa6p15dr7" path="res://assets/hp_pot.png" id="2_6medn"]
+[ext_resource type="Texture2D" uid="uid://c03q6n8r22ho7" path="res://assets/items/hp_pot.png" id="2_6medn"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6medn"]
 

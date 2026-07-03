@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://cnspe0k2s4d5m"]
 
 [ext_resource type="Script" uid="uid://dr5grlyueusox" path="res://entities/enemies/bullet.gd" id="1_5a0gh"]
-[ext_resource type="Texture2D" uid="uid://djo1ddympoqwa" path="res://assets/bullet.png" id="2_5a0gh"]
+[ext_resource type="Texture2D" uid="uid://dvbw1v6eudhlh" path="res://assets/enemy/bullet.png" id="2_5a0gh"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_6r5lk"]
 

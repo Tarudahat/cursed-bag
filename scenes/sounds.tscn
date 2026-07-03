@@ -1,10 +1,10 @@
 [gd_scene format=3 uid="uid://dod5enhs22n01"]
 
-[ext_resource type="AudioStream" uid="uid://cu4ycyoxyjj1j" path="res://assets/lol.wav" id="1_aevjb"]
+[ext_resource type="AudioStream" uid="uid://bsixa67wun2qu" path="res://assets/audio/lol.wav" id="1_aevjb"]
 [ext_resource type="Script" uid="uid://bu6qv2rlcbds1" path="res://scenes/sounds.gd" id="1_h5l0e"]
-[ext_resource type="AudioStream" uid="uid://pqwaui7udhbc" path="res://assets/shot.wav" id="2_8b883"]
-[ext_resource type="AudioStream" uid="uid://eo2xvttrv2kp" path="res://assets/sw.wav" id="2_umdxc"]
-[ext_resource type="AudioStream" uid="uid://dx5mb040t6pkt" path="res://assets/Boiler.wav" id="5_4v5pq"]
+[ext_resource type="AudioStream" uid="uid://cscghr2urg6xp" path="res://assets/audio/shot.wav" id="2_8b883"]
+[ext_resource type="AudioStream" uid="uid://dthdxioua477d" path="res://assets/audio/sw.wav" id="2_umdxc"]
+[ext_resource type="AudioStream" uid="uid://c1x3230fmt835" path="res://assets/audio/Boiler.wav" id="5_4v5pq"]
 
 [node name="Node" type="Node" unique_id=571839848]
 script = ExtResource("1_h5l0e")

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://bb6n5y0j0v61k"]
 
 [ext_resource type="Script" uid="uid://cds4lwpxtoa57" path="res://entities/enemies/ghost.gd" id="1_djdh1"]
-[ext_resource type="Texture2D" uid="uid://cdowqhsrdqt8k" path="res://assets/ghost.png" id="1_j4uan"]
+[ext_resource type="Texture2D" uid="uid://3xsrcpr3vx7f" path="res://assets/enemy/ghost.png" id="1_j4uan"]
 [ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="2_v78bc"]
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_wuakj"]

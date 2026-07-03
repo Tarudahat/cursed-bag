@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://cqau15lim4s0v"]
 
-[ext_resource type="Texture2D" uid="uid://cmrqjjfkntyew" path="res://assets/tiles.png" id="1_2q6dc"]
+[ext_resource type="Texture2D" uid="uid://dfc015rftf2mr" path="res://assets/tileset/tiles.png" id="1_2q6dc"]
 [ext_resource type="Script" uid="uid://baujxkr2w7d6l" path="res://scenes/level.gd" id="1_w8frs"]
 [ext_resource type="PackedScene" uid="uid://bbxswwnqomvju" path="res://entities/player.tscn" id="2_w7c3h"]
 

@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bc2x88aeeqpns"]
 
-[ext_resource type="Texture2D" uid="uid://dqphvf4ep28qi" path="res://assets/titlescreen.png" id="1_3jj3l"]
+[ext_resource type="Texture2D" uid="uid://b0maromv8uwbh" path="res://assets/UI/titlescreen.png" id="1_3jj3l"]
 [ext_resource type="Script" uid="uid://khpmaijkn66i" path="res://scenes/titlescreen.gd" id="1_6d6rd"]
 
 [node name="titlescreen" type="TextureRect" unique_id=860765219]

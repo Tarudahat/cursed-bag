@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://brrycm6a10bnv"]
 
-[ext_resource type="Texture2D" uid="uid://bpqxtlh6xdyvg" path="res://assets/gameover.png" id="1_ncp31"]
+[ext_resource type="Texture2D" uid="uid://tgd82exue5fy" path="res://assets/UI/gameover.png" id="1_ncp31"]
 [ext_resource type="Script" uid="uid://3bycahfkxydn" path="res://scenes/gameover.gd" id="2_dy3ie"]
 
 [node name="gameoverscreen" type="TextureRect" unique_id=546637633]

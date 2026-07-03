@@ -1,8 +1,8 @@
 [gd_scene format=3 uid="uid://5tslfllocxqm"]
 
 [ext_resource type="Script" uid="uid://d3rnt60qwbdi2" path="res://entities/gem.gd" id="1_wf8lw"]
-[ext_resource type="Texture2D" uid="uid://b7u23lau1l57n" path="res://assets/dia1.png" id="2_yhn3m"]
-[ext_resource type="Texture2D" uid="uid://2vmnwlthhucs" path="res://assets/dia2.png" id="3_clwes"]
+[ext_resource type="Texture2D" uid="uid://lgvj7uuewtk5" path="res://assets/items/dia1.png" id="2_yhn3m"]
+[ext_resource type="Texture2D" uid="uid://bdfmu0bikou5x" path="res://assets/items/dia2.png" id="3_clwes"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_4t64q"]
 animations = [{

@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dpl2narjj0i7u"]
 
 [ext_resource type="Script" uid="uid://d1iuk6vr6i8sa" path="res://entities/sword_blast.gd" id="1_h2sfm"]
-[ext_resource type="Texture2D" uid="uid://cnw727yq48lxy" path="res://assets/swbl.png" id="2_h2sfm"]
+[ext_resource type="Texture2D" uid="uid://c3owdgmvphvdr" path="res://assets/player/swbl.png" id="2_h2sfm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h2sfm"]
 
