@@ -15,7 +15,6 @@ texture = ExtResource("1_3jj3l")
 script = ExtResource("1_6d6rd")
 
 [node name="Button" type="Button" parent="." unique_id=798728025]
-show_behind_parent = true
 layout_mode = 0
 offset_left = 368.5
 offset_top = 499.5

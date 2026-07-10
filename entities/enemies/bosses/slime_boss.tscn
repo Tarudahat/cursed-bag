@@ -1,0 +1,244 @@
+[gd_scene format=3 uid="uid://d0euqrfpjmrwg"]
+
+[ext_resource type="Script" uid="uid://mfpjjgpwdaht" path="res://entities/enemies/bosses/slime_boss.gd" id="1_8mbs6"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="2_6ogwb"]
+[ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="3_4ok1d"]
+[ext_resource type="Texture2D" uid="uid://ce24ixxxy7vnx" path="res://assets/player/shadow.png" id="3_6ogwb"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_4ok1d"]
+radius = 89.696976
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_4wh6f"]
+shader = ExtResource("3_4ok1d")
+shader_parameter/enabled = false
+shader_parameter/speed = 10.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4ok1d"]
+radius = 294.11746
+height = 729.41125
+
+[sub_resource type="Animation" id="Animation_8mbs6"]
+length = 0.001
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(4, 4)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Shadow:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [Vector2(2.5, 2.5)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Sprite2D:skew")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0),
+"transitions": PackedFloat32Array(1),
+"update": 0,
+"values": [0.0]
+}
+
+[sub_resource type="Animation" id="Animation_4ok1d"]
+resource_name = "atk_0"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.43333334, 0.6666667, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 129), Vector2(0, -129), Vector2(0, -700), Vector2(0, -129), Vector2(0, 129), Vector2(0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:scale")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.43333334, 0.6666667, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(6, 1), Vector2(2, 6), Vector2(4, 6), Vector2(2, 6), Vector2(6, 1), Vector2(4, 4)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Shadow:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.21, 0.44, 0.67, 0.8, 1),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector2(3.3, 2.5), Vector2(1.5, 2.5), Vector2(2.3, 2.5), Vector2(1.5, 2.5), Vector2(3.3, 2.5), Vector2(2.3, 2)]
+}
+
+[sub_resource type="Animation" id="Animation_eanqx"]
+resource_name = "atk_1"
+
+[sub_resource type="Animation" id="Animation_6ogwb"]
+resource_name = "windup_0"
+length = 0.43333334
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:scale")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.43333334),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(4, 4), Vector2(6, 1)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.43333334),
+"transitions": PackedFloat32Array(1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 192)]
+}
+
+[sub_resource type="Animation" id="Animation_4wh6f"]
+resource_name = "windup_1"
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Sprite2D:skew")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.46666667, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [0.0, 0.4625122517784973, 0.0]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Sprite2D:position")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.46666667, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(0, 0), Vector2(0, 129), Vector2(0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Sprite2D:scale")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.46666667, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(4, 4), Vector2(5, 1), Vector2(4, 4)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Shadow:scale")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.46666667, 1),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector2(2.3, 2), Vector2(3.3, 2.5), Vector2(2.3, 2)]
+}
+
+[sub_resource type="AnimationLibrary" id="AnimationLibrary_4ok1d"]
+_data = {
+&"RESET": SubResource("Animation_8mbs6"),
+&"atk_0": SubResource("Animation_4ok1d"),
+&"atk_1": SubResource("Animation_eanqx"),
+&"windup_0": SubResource("Animation_6ogwb"),
+&"windup_1": SubResource("Animation_4wh6f")
+}
+
+[node name="SlimeBoss" type="CharacterBody2D" unique_id=1790595734]
+motion_mode = 1
+wall_min_slide_angle = 3.1415927
+safe_margin = 1.0
+script = ExtResource("1_8mbs6")
+hp = 1000
+value = 250
+metadata/_custom_type_script = "uid://d3rg3tltonmlk"
+
+[node name="Area2D" type="Area2D" parent="." unique_id=1696870373]
+position = Vector2(0, 216)
+scale = Vector2(3.3, 2.5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=710824281]
+shape = SubResource("CircleShape2D_4ok1d")
+
+[node name="Shadow" type="Sprite2D" parent="." unique_id=132157114]
+modulate = Color(1, 1, 1, 0.49019608)
+position = Vector2(0, 216)
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("3_6ogwb")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=722338143]
+modulate = Color(1.8247963, 1.8247963, 1.8247963, 1)
+material = SubResource("ShaderMaterial_4wh6f")
+scale = Vector2(4, 4)
+texture = ExtResource("2_6ogwb")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1489361129]
+position = Vector2(-1.9895202e-13, 55.999992)
+rotation = 1.5707964
+scale = Vector2(0.6800004, 0.6800004)
+shape = SubResource("CapsuleShape2D_4ok1d")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=171413515]
+libraries/ = SubResource("AnimationLibrary_4ok1d")
+
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
+[connection signal="start_think" from="." to="." method="_on_start_think"]
+[connection signal="start_windup" from="." to="." method="_on_start_windup"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="animation_finished" from="AnimationPlayer" to="." method="_on_animation_player_animation_finished"]

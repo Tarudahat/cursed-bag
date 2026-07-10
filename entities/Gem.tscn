@@ -3,6 +3,8 @@
 [ext_resource type="Script" uid="uid://d3rnt60qwbdi2" path="res://entities/gem.gd" id="1_wf8lw"]
 [ext_resource type="Texture2D" uid="uid://lgvj7uuewtk5" path="res://assets/items/dia1.png" id="2_yhn3m"]
 [ext_resource type="Texture2D" uid="uid://bdfmu0bikou5x" path="res://assets/items/dia2.png" id="3_clwes"]
+[ext_resource type="Texture2D" uid="uid://cmwhokuatyj0n" path="res://assets/items/dia1_02.png" id="4_4t64q"]
+[ext_resource type="Texture2D" uid="uid://b4uithlkspeb" path="res://assets/items/dia2_02.png" id="5_abl4h"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_4t64q"]
 animations = [{
@@ -14,24 +16,53 @@ animations = [{
 "texture": ExtResource("3_clwes")
 }],
 "loop": true,
-"name": &"default",
-"speed": 5.0
+"name": &"0",
+"speed": 2.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_4t64q")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_abl4h")
+}],
+"loop": true,
+"name": &"1",
+"speed": 2.5
 }]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_sxoi7"]
-radius = 32.0
+radius = 69.050705
 
-[node name="gem" type="Area2D" unique_id=1573775691]
+[sub_resource type="CircleShape2D" id="CircleShape2D_4t64q"]
+radius = 29.15476
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_abl4h"]
+radius = 350.05142
+
+[node name="gem" type="CharacterBody2D" unique_id=471694916]
+collision_layer = 0
 script = ExtResource("1_wf8lw")
-value = null
 
-[node name="Sprite2D" type="AnimatedSprite2D" parent="." unique_id=748315879]
+[node name="gem" type="Area2D" parent="." unique_id=1573775691]
+
+[node name="Sprite2D" type="AnimatedSprite2D" parent="gem" unique_id=748315879]
 scale = Vector2(0.488, 0.5)
 sprite_frames = SubResource("SpriteFrames_4t64q")
-frame_progress = 0.5593971
+animation = &"0"
+frame_progress = 0.86111706
 speed_scale = 3.0
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1705174582]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="gem" unique_id=1705174582]
 shape = SubResource("CircleShape2D_sxoi7")
 
-[connection signal="area_entered" from="." to="." method="_on_area_entered"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1197786288]
+shape = SubResource("CircleShape2D_4t64q")
+
+[node name="AttractionField" type="Area2D" parent="." unique_id=567877181]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="AttractionField" unique_id=1725968887]
+shape = SubResource("CircleShape2D_abl4h")
+
+[connection signal="area_entered" from="gem" to="." method="_on_gem_area_entered"]
+[connection signal="area_entered" from="AttractionField" to="." method="_on_attraction_field_area_entered"]

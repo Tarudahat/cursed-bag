@@ -1,7 +1,7 @@
 extends Node
 
 var current_level = 0
-var level_room_count = [5,7,12,15,25]
+var level_room_count = [5, 7, 12, 15, 25]
 var lvl = preload("res://scenes/level.tscn")
 var gmov = preload("res://scenes/gameover.tscn")
 var tit = preload("res://scenes/titlescreen.tscn")
@@ -11,6 +11,9 @@ var player_gems = -1
 var player_current_hp = -1
 var perm_shield = false
 var curse_cap = -1
+var minimap = null
+var player_node = null
+var boss = null
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta: float) -> void:
@@ -22,6 +25,10 @@ func get_lvl_inst():
 var current_level_node = null
 
 func next_level():
+	boss = null
+	minimap = null
+	player_node = null
+
 	if not Sounds.music.is_playing():
 		Sounds.music.play()
 	current_level += 1

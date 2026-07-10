@@ -26,6 +26,6 @@ max_polyphony = 25
 
 [node name="music" type="AudioStreamPlayer" parent="." unique_id=2130268995]
 stream = ExtResource("5_4v5pq")
-volume_db = -10.0
+volume_db = -80.0
 
 [connection signal="finished" from="music" to="." method="_on_music_finished"]

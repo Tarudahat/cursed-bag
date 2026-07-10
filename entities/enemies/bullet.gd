@@ -2,6 +2,7 @@ extends Area2D
 
 var direction = Vector2.ZERO
 @export var speed = 500
+@export var dmg = 3
 
 func _ready() -> void:
 	look_at(to_global(direction))
@@ -19,7 +20,7 @@ func _on_timer_timeout() -> void:
 
 func _on_area_entered(area: Area2D) -> void:
 	if area.get_parent() is Player && area.get_name() == "atk_hitbox":
-		area.get_parent().damage(3)	
+		area.get_parent().damage(dmg)	
 		self.queue_free()
 
 

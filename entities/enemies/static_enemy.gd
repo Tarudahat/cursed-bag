@@ -4,20 +4,23 @@ class_name StaticEnemy
 var gem = preload("res://entities/Gem.tscn")
 
 @export var hp = 10
+var max_hp = hp
 @export var value = 10
 @export var default_death = true
 
 @export var inv_time = 1.0
-@onready var dmg_timer : Timer 
+@onready var dmg_timer: Timer
 
 var can_get_hit = true
 
-signal got_hit(hp,value)
+signal got_hit(hp, value)
 signal inv_end
 signal died
 var gem_inst = null
 
 func _ready() -> void:
+	max_hp = hp
+	
 	dmg_timer = Timer.new()
 	dmg_timer.wait_time = inv_time
 	add_child(dmg_timer)
@@ -31,12 +34,14 @@ func damage(amount: int) -> void:
 		hp -= amount
 		emit_signal("got_hit", hp, value)
 		
-		if hp < 0:
+		if hp <= 0:
 			emit_signal("died")
 			if default_death:
-				gem_inst.position = position + Vector2(randi_range(-10,10), randi_range(-10,10))
-				gem_inst.value = value
-				get_parent().add_child.call_deferred(gem_inst)
+				for i in value:
+					var gem_inst = gem.instantiate()
+					gem_inst.position = position + Vector2(randi_range(-10, 10), randi_range(-10, 10))
+					gem_inst.value = 1
+					get_parent().add_child.call_deferred(gem_inst)
 				self.queue_free()
 
 

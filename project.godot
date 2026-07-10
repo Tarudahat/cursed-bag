@@ -22,10 +22,11 @@ Sounds="*uid://dod5enhs22n01"
 
 [display]
 
+window/size/viewport_width=1920
+window/size/viewport_height=1200
 window/size/mode=3
 window/stretch/mode="viewport"
-window/stretch/aspect="expand"
-window/stretch/scale=0.5
+window/stretch/aspect="keep_height"
 
 [gui]
 

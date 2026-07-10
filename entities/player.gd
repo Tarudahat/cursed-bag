@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name Player
 
-const SPEED = 600.0
+const SPEED = 720.0
 const JUMP_VELOCITY = -400.0
 var current_sword_look = Vector2.ZERO
 var current_sword_speed = 20
@@ -11,7 +11,7 @@ var can_jump = true
 var air_t = 0
 var in_air = false
 
-const hp_max = 50
+const hp_max = 100
 const atk_max = 25
 
 var hp = hp_max
@@ -33,6 +33,11 @@ var fire_cooldown = false
 var blast_node = preload("res://entities/sword_blast.tscn")
 
 func _ready() -> void:
+	Globals.minimap = $Camera2D/Control/minimap
+	Globals.player_node = self
+	$Camera2D/Control/BossBar.visible = false
+	
+
 	if Globals.player_gems != -1:
 		gems = Globals.player_gems
 		hp = Globals.player_current_hp
@@ -44,17 +49,24 @@ func _ready() -> void:
 		gems = 0
 		Globals.curse_cap = curse_cap
 	
-	$Camera2D/Control/PanelContainer/GEM_BAR.set_size(Vector2(0.01,0.01), false) 
-	$Camera2D/Control/PanelContainer/HP_BAR.set_size(Vector2(0.01,0.01), false) 
+	$Camera2D/Control/PanelContainer/GEM_BAR.set_size(Vector2(0.01, 0.01), false)
+	$Camera2D/Control/PanelContainer/HP_BAR.set_size(Vector2(0.01, 0.01), false)
 	$sprite.material.set_shader_parameter("enabled", false)
 
 func _process(_delta: float) -> void:
+	if Globals.boss != null:
+		$Camera2D/Control/BossBar.visible = true
+		$Camera2D/Control/BossBar.max_value = Globals.boss.max_hp
+		$Camera2D/Control/BossBar.value = Globals.boss.hp
+	else:
+		$Camera2D/Control/BossBar.value = 0.0
+	
 	var a = curse_cap - gems
-	if a<=0:
-		a = float(curse_cap)/10
+	if a <= 0:
+		a = float(curse_cap) / 10
 	$Camera2D/Control/PanelContainer/GEM_BAR.text = str(int(gems))
 	$Camera2D/Control/PanelContainer/HP_BAR.text = \
-	str(int(hp))+"/"+str( int (round(hp_max * (float(a)/curse_cap))) )
+	str(int(hp)) + "/" + str(int(round(hp_max * (float(a) / curse_cap))))
 	
 	$Camera2D/Control/curbar.value = gems * 0.78
 	$Camera2D/Control/curbar.max_value = curse_cap * 0.78
@@ -65,15 +77,15 @@ func _process(_delta: float) -> void:
 		Globals.current_level = 0
 		Globals.game_over()
 	else:
-		if Globals.player_gems != gems:# got gems
+		if Globals.player_gems != gems: # got gems
 			a = curse_cap - gems
-			if a<=0:
-				a = float(curse_cap)/10
+			if a <= 0:
+				a = float(curse_cap) / 10
 			
-			if hp > hp_max * (float(a)/curse_cap): # cap
-				hp = round(hp_max * (float(a)/curse_cap))
-			if atk > atk_max * (float(a)/curse_cap): # cap
-				atk = round(atk_max * (float(a)/curse_cap))
+			if hp > hp_max * (float(a) / curse_cap): # cap
+				hp = round(hp_max * (float(a) / curse_cap))
+			if atk > atk_max * (float(a) / curse_cap): # cap
+				atk = round(atk_max * (float(a) / curse_cap))
 				
 			Globals.player_gems = gems
 		
@@ -98,7 +110,7 @@ func _process(_delta: float) -> void:
 	can_fire = !(gems >= curse_cap * 0.25)
 	
 	if Input.is_action_pressed("fire_btn"):
-		if can_fire && !fire_cooldown:	
+		if can_fire && !fire_cooldown:
 			Sounds.bullet.play()
 			Sounds.bullet.position = global_position
 			var blast = blast_node.instantiate()
@@ -112,8 +124,8 @@ func _process(_delta: float) -> void:
 	if Input.is_action_pressed("hit_btn") && !attacking && !attacking_cooldown:
 		attacking = true
 		attacking_cooldown = true
-		atk_angl_init = (get_local_mouse_position()- $Sword.position).angle()
-		atk_angl = atk_angl_init - PI/2.5
+		atk_angl_init = (get_local_mouse_position() - $Sword.position).angle()
+		atk_angl = atk_angl_init - PI / 2.5
 		Sounds.sword.play()
 		Sounds.sword.position = global_position
 		
@@ -121,10 +133,8 @@ func _process(_delta: float) -> void:
 		in_air = true
 		
 		
-	
-
 func _physics_process(delta: float) -> void:
-	var direction := Input.get_vector("ui_left","ui_right","ui_up","ui_down")
+	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	
 	if direction == Vector2.UP:
 		$sprite.play("back")
@@ -134,7 +144,7 @@ func _physics_process(delta: float) -> void:
 		$sprite.play("side")
 		$sprite.flip_h = direction.x > 0
 	
-	if fposmod($Sword.rotation, PI*2) < PI*4/5:	
+	if fposmod($Sword.rotation, PI * 2) < PI * 4 / 5:
 		$Sword.z_index = 2
 	else:
 		$Sword.z_index = 0
@@ -147,25 +157,25 @@ func _physics_process(delta: float) -> void:
 		
 	var target_look_coord = get_local_mouse_position()
 	
-	if ! attacking:
+	if !attacking:
 		mouse_speed = max(mouse_speed, Input.get_last_mouse_velocity().length())
 		
 		current_sword_speed = move_toward(current_sword_speed, mouse_speed, 5)
 		
-		current_sword_look.x = move_toward(current_sword_look.x,target_look_coord.x,current_sword_speed)
-		current_sword_look.y = move_toward(current_sword_look.y,target_look_coord.y,current_sword_speed)
+		current_sword_look.x = move_toward(current_sword_look.x, target_look_coord.x, current_sword_speed)
+		current_sword_look.y = move_toward(current_sword_look.y, target_look_coord.y, current_sword_speed)
 	else:
 		atk_angl += 0.15
-		current_sword_look = Vector2(cos(atk_angl),sin(atk_angl))
-		if atk_angl > atk_angl_init + PI/2.5:
+		current_sword_look = Vector2(cos(atk_angl), sin(atk_angl))
+		if atk_angl > atk_angl_init + PI / 2.5:
 			$atk_timer.start()
 			attacking = false
 	
 	if in_air:
-		set_collision_mask_value(2,false) # let pass through
-		$atk_hitbox.set_collision_mask_value(2,false) # let pass through no dmg
-		if air_t < PI/2 :
-			air_t += 4 *delta
+		set_collision_mask_value(2, false) # let pass through
+		$atk_hitbox.set_collision_mask_value(2, false) # let pass through no dmg
+		if air_t < PI / 2:
+			air_t += 4 * delta
 		else:
 			air_t += 3.6 * delta
 			
@@ -179,8 +189,8 @@ func _physics_process(delta: float) -> void:
 			$Sword.position.y = 0
 			$Shield.position.y = 0
 			in_air = false
-			set_collision_mask_value(2,true)
-			$atk_hitbox.set_collision_mask_value(2,true) # let pass through no dmg
+			set_collision_mask_value(2, true)
+			$atk_hitbox.set_collision_mask_value(2, true) # let pass through no dmg
 			
 			air_t = 0
 			
@@ -190,8 +200,8 @@ func _physics_process(delta: float) -> void:
 		
 	move_and_slide()
 
-func damage( amount : int) -> void:
-	if amount>0:
+func damage(amount: int) -> void:
+	if amount > 0:
 		if !is_inv:
 			is_inv = true
 			$sprite.material.set_shader_parameter("enabled", true)

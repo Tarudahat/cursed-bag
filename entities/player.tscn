@@ -4,11 +4,11 @@
 [ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="1_e4p34"]
 [ext_resource type="Texture2D" uid="uid://crbo5an430kmp" path="res://assets/player/sword.png" id="2_rfe5m"]
 [ext_resource type="Texture2D" uid="uid://3kyr4gu143lh" path="res://assets/player/shield.png" id="3_q0i8f"]
-[ext_resource type="Texture2D" uid="uid://5xsmus155fu7" path="res://assets/items/heart1.png" id="4_qsoyl"]
-[ext_resource type="Texture2D" uid="uid://bdfmu0bikou5x" path="res://assets/items/dia2.png" id="5_6nm46"]
-[ext_resource type="Texture2D" uid="uid://lgvj7uuewtk5" path="res://assets/items/dia1.png" id="6_i623q"]
+[ext_resource type="Texture2D" uid="uid://yakrueyq25s" path="res://assets/items/heart2.png" id="4_q0i8f"]
 [ext_resource type="Texture2D" uid="uid://bdfmu0bikou5x" path="res://assets/items/dia2.png" id="7_ef06p"]
 [ext_resource type="Texture2D" uid="uid://b64o5f027h2al" path="res://assets/UI/empty_curse.png" id="8_tjdhl"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="9_0i614"]
+[ext_resource type="PackedScene" uid="uid://dhijonbin4m85" path="res://entities/minimap.tscn" id="9_q0i8f"]
 [ext_resource type="Texture2D" uid="uid://dvfc3oxu7oxnv" path="res://assets/UI/full_curse.png" id="9_x08pd"]
 [ext_resource type="Texture2D" uid="uid://ce24ixxxy7vnx" path="res://assets/player/shadow.png" id="10_q0i8f"]
 [ext_resource type="Texture2D" uid="uid://djprlh7kyjjxa" path="res://assets/player/hero_back.png" id="11_kdgjc"]
@@ -20,17 +20,23 @@ size = Vector2(26.541565, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e4p34"]
 
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0i614"]
+load_path = "res://.godot/imported/heart1.png-05ac3a86e8a3c940d810b4634b9c5e53.ctex"
+
 [sub_resource type="AnimatedTexture" id="AnimatedTexture_i623q"]
 frames = 2
 speed_scale = 3.0
-frame_0/texture = ExtResource("4_qsoyl")
-frame_1/texture = ExtResource("5_6nm46")
+frame_0/texture = SubResource("CompressedTexture2D_0i614")
+frame_1/texture = ExtResource("4_q0i8f")
 frame_1/duration = 1.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_kdgjc"]
+load_path = "res://.godot/imported/dia1.png-20e6890d78c94a2b69599aedb01f25d7.ctex"
 
 [sub_resource type="AnimatedTexture" id="AnimatedTexture_tjdhl"]
 frames = 2
 speed_scale = 3.0
-frame_0/texture = ExtResource("6_i623q")
+frame_0/texture = SubResource("CompressedTexture2D_kdgjc")
 frame_1/texture = ExtResource("7_ef06p")
 frame_1/duration = 1.0
 
@@ -140,14 +146,16 @@ scale = Vector2(2.1150022, 10.224407)
 shape = SubResource("RectangleShape2D_e4p34")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=1318522249]
+zoom = Vector2(0.676, 0.676)
 
 [node name="Control" type="Control" parent="Camera2D" unique_id=1069961002]
 layout_mode = 3
 anchors_preset = 0
-offset_left = -736.0
-offset_top = -720.0
-offset_right = -696.0
-offset_bottom = -680.0
+offset_left = -1024.0
+offset_top = -892.0
+offset_right = -984.0
+offset_bottom = -852.0
+metadata/_edit_use_anchors_ = true
 
 [node name="PanelContainer" type="HBoxContainer" parent="Camera2D/Control" unique_id=1443075479]
 layout_mode = 1
@@ -190,7 +198,24 @@ fill_mode = 3
 texture_under = ExtResource("8_tjdhl")
 texture_progress = ExtResource("9_x08pd")
 
+[node name="minimap" parent="Camera2D/Control" unique_id=137579781 instance=ExtResource("9_q0i8f")]
+position = Vector2(1678, 70)
+scale = Vector2(2, 2)
+
+[node name="BossBar" type="TextureProgressBar" parent="Camera2D/Control" unique_id=190519052]
+layout_mode = 0
+offset_left = 408.0
+offset_top = 38.999985
+offset_right = 536.0
+offset_bottom = 166.99998
+scale = Vector2(8.819362, 0.6655925)
+texture_under = ExtResource("9_0i614")
+texture_progress = ExtResource("9_0i614")
+tint_under = Color(0, 0, 0, 1)
+tint_progress = Color(12.8605, 0.042388093, 10.238218, 1)
+
 [node name="terrain_hitbox" type="CollisionShape2D" parent="." unique_id=1387891109]
+position = Vector2(0, 39)
 shape = SubResource("CircleShape2D_b0kkn")
 
 [node name="shadow" type="Sprite2D" parent="." unique_id=1672233243]
@@ -219,7 +244,7 @@ wait_time = 0.05
 one_shot = true
 
 [node name="atk_hitbox" type="Area2D" parent="." unique_id=1331654378]
-visible = false
+position = Vector2(0, -1)
 collision_layer = 11
 collision_mask = 11
 

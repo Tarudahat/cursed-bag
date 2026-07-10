@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://kv4bofbxwu8q"]
+
+[ext_resource type="Script" uid="uid://db47c5fh4ft5u" path="res://entities/pot.gd" id="1_rpcwm"]
+[ext_resource type="Texture2D" uid="uid://jcnm5cqojx0s" path="res://assets/items/pot.png" id="2_rpcwm"]
+[ext_resource type="Texture2D" uid="uid://6r8lmwon3gbp" path="res://assets/items/pot_broken.png" id="3_i0py6"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rpcwm"]
+radius = 74.431175
+
+[node name="Pot" type="StaticBody2D" unique_id=125821533]
+script = ExtResource("1_rpcwm")
+hp = 1
+default_death = false
+metadata/_custom_type_script = "uid://cv28ldx1jvvp3"
+
+[node name="whole" type="Sprite2D" parent="." unique_id=719526455]
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("2_rpcwm")
+
+[node name="broken" type="Sprite2D" parent="." unique_id=215317639]
+visible = false
+scale = Vector2(0.6, 0.6)
+texture = ExtResource("3_i0py6")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1774690625]
+visible = false
+shape = SubResource("CircleShape2D_rpcwm")
+
+[connection signal="died" from="." to="." method="_on_died"]
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]

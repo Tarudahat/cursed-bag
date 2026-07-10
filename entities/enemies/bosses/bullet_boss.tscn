@@ -1,0 +1,36 @@
+[gd_scene format=3 uid="uid://tb6wjsiwo68w"]
+
+[ext_resource type="Script" uid="uid://bpdp6gok16wll" path="res://entities/enemies/bosses/bullet_boss.gd" id="1_2tihv"]
+[ext_resource type="Texture2D" uid="uid://cmee2p2p2o8vj" path="res://assets/enemy/turret.png" id="2_2tihv"]
+[ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="2_bs0t2"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_y0og6"]
+shader = ExtResource("2_bs0t2")
+shader_parameter/enabled = false
+shader_parameter/speed = 10.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_bs0t2"]
+radius = 192.1666
+
+[node name="Boss" type="CharacterBody2D" unique_id=794191035]
+script = ExtResource("1_2tihv")
+metadata/_custom_type_script = "uid://d3rg3tltonmlk"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=361678554]
+modulate = Color(0.8666667, 0.03529412, 0.2509804, 1)
+self_modulate = Color(0.75221515, 0.09227372, 0.45172608, 1)
+material = SubResource("ShaderMaterial_y0og6")
+texture = ExtResource("2_2tihv")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=109558285]
+shape = SubResource("CircleShape2D_bs0t2")
+
+[node name="shoot_wave_cooldown" type="Timer" parent="." unique_id=1885668515]
+wait_time = 0.2
+
+[node name="shoot_pattern_cooldown" type="Timer" parent="." unique_id=1940804445]
+
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
+[connection signal="timeout" from="shoot_wave_cooldown" to="." method="_on_shoot_wave_cooldown_timeout"]
+[connection signal="timeout" from="shoot_pattern_cooldown" to="." method="_on_shoot_pattern_cooldown_timeout"]
