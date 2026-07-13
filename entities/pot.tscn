@@ -14,12 +14,12 @@ default_death = false
 metadata/_custom_type_script = "uid://cv28ldx1jvvp3"
 
 [node name="whole" type="Sprite2D" parent="." unique_id=719526455]
-scale = Vector2(0.6, 0.6)
+scale = Vector2(0.63, 0.63)
 texture = ExtResource("2_rpcwm")
 
 [node name="broken" type="Sprite2D" parent="." unique_id=215317639]
 visible = false
-scale = Vector2(0.6, 0.6)
+scale = Vector2(0.63, 0.63)
 texture = ExtResource("3_i0py6")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1774690625]

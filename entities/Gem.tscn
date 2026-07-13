@@ -66,3 +66,4 @@ shape = SubResource("CircleShape2D_abl4h")
 
 [connection signal="area_entered" from="gem" to="." method="_on_gem_area_entered"]
 [connection signal="area_entered" from="AttractionField" to="." method="_on_attraction_field_area_entered"]
+[connection signal="area_exited" from="AttractionField" to="." method="_on_attraction_field_area_exited"]

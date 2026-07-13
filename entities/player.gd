@@ -3,6 +3,18 @@ class_name Player
 
 const SPEED = 720.0
 const JUMP_VELOCITY = -400.0
+
+const CAM_SPEED = 800
+const MAX_CAM_DIST = 300.0
+
+var cam_target_distance = 0
+var cam_target_direction: Vector2
+var group_cam_limits: PackedVector2Array
+
+enum Items {GEM_MAGNET}
+var inventory: Array[Items] = []
+var current_room_id: int = -1
+
 var current_sword_look = Vector2.ZERO
 var current_sword_speed = 20
 var mouse_speed = 0
@@ -19,6 +31,7 @@ var atk = atk_max;
 
 var is_inv = false
 var gems = 0
+var keys = 0
 var curse_cap = 500
 
 var attacking = false
@@ -31,13 +44,14 @@ var perma_shield = false
 var can_fire = true
 var fire_cooldown = false
 var blast_node = preload("res://entities/sword_blast.tscn")
+var player_ui_rsrc = preload("res://entities/player_ui.tscn")
+var cam_is_moving: bool = false
 
 func _ready() -> void:
-	Globals.minimap = $Camera2D/Control/minimap
 	Globals.player_node = self
-	$Camera2D/Control/BossBar.visible = false
+	var player_ui = player_ui_rsrc.instantiate()
+	get_parent().get_parent().add_child.call_deferred(player_ui)
 	
-
 	if Globals.player_gems != -1:
 		gems = Globals.player_gems
 		hp = Globals.player_current_hp
@@ -49,28 +63,21 @@ func _ready() -> void:
 		gems = 0
 		Globals.curse_cap = curse_cap
 	
-	$Camera2D/Control/PanelContainer/GEM_BAR.set_size(Vector2(0.01, 0.01), false)
-	$Camera2D/Control/PanelContainer/HP_BAR.set_size(Vector2(0.01, 0.01), false)
 	$sprite.material.set_shader_parameter("enabled", false)
+	
+	$Camera2D.global_position = global_position
 
-func _process(_delta: float) -> void:
-	if Globals.boss != null:
-		$Camera2D/Control/BossBar.visible = true
-		$Camera2D/Control/BossBar.max_value = Globals.boss.max_hp
-		$Camera2D/Control/BossBar.value = Globals.boss.hp
-	else:
-		$Camera2D/Control/BossBar.value = 0.0
-	
+
+func _process(delta: float) -> void:
+	# camera panning
+	if !group_cam_limits.is_empty():
+		$Camera2D.limit_top = group_cam_limits[0].y
+		$Camera2D.limit_left = group_cam_limits[0].x
+		$Camera2D.limit_bottom = group_cam_limits[1].y
+		$Camera2D.limit_right = group_cam_limits[1].x
+
 	var a = curse_cap - gems
-	if a <= 0:
-		a = float(curse_cap) / 10
-	$Camera2D/Control/PanelContainer/GEM_BAR.text = str(int(gems))
-	$Camera2D/Control/PanelContainer/HP_BAR.text = \
-	str(int(hp)) + "/" + str(int(round(hp_max * (float(a) / curse_cap))))
-	
-	$Camera2D/Control/curbar.value = gems * 0.78
-	$Camera2D/Control/curbar.max_value = curse_cap * 0.78
-	
+
 	if hp <= 0:
 		Globals.player_gems = 0
 		Globals.player_current_hp = hp_max
@@ -104,7 +111,6 @@ func _process(_delta: float) -> void:
 	if $Shield.visible == false && perma_shield:
 		$Shield.set_collision_layer_value(4, true)
 		$Shield.visible = true
-		
 	
 	# can fire?
 	can_fire = !(gems >= curse_cap * 0.25)
@@ -144,16 +150,23 @@ func _physics_process(delta: float) -> void:
 		$sprite.play("side")
 		$sprite.flip_h = direction.x > 0
 	
+	
 	if fposmod($Sword.rotation, PI * 2) < PI * 4 / 5:
 		$Sword.z_index = 2
 	else:
 		$Sword.z_index = 0
 	if direction:
 		velocity = direction * SPEED
+		cam_target_distance = move_toward(cam_target_distance, MAX_CAM_DIST, SPEED * delta / 2)
+		cam_target_distance = clamp(cam_target_distance, -MAX_CAM_DIST, MAX_CAM_DIST)
+		cam_target_direction = direction
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.y = move_toward(velocity.y, 0, SPEED)
-		
+	
+	var cam_target = global_position + cam_target_direction * cam_target_distance
+	$Camera2D.global_position.x = move_toward($Camera2D.global_position.x, cam_target.x, CAM_SPEED * delta)
+	$Camera2D.global_position.y = move_toward($Camera2D.global_position.y, cam_target.y, CAM_SPEED * delta)
 		
 	var target_look_coord = get_local_mouse_position()
 	
@@ -200,6 +213,8 @@ func _physics_process(delta: float) -> void:
 		
 	move_and_slide()
 
+# functions for entity interaction
+
 func damage(amount: int) -> void:
 	if amount > 0:
 		if !is_inv:
@@ -210,20 +225,19 @@ func damage(amount: int) -> void:
 	else:
 		hp -= amount
 
+func has_item(item: Items) -> bool:
+	return item in inventory
+
+func add_item(item: Items):
+	inventory.append(item)
+
+# signals
 func _on_blast_timer_timeout() -> void:
 	fire_cooldown = false
-
 
 func _on_atk_timer_timeout() -> void:
 	attacking_cooldown = false
 
-
-func _on_atk_hitbox_body_entered(body: Node2D) -> void:
-	pass # Replace with function body.
-
-
-func _on_atk_hitbox_body_exited(body: Node2D) -> void:
-	pass # Replace with function body.
 
 func _on_dmg_timer_timeout() -> void:
 	$sprite.material.set_shader_parameter("enabled", false)

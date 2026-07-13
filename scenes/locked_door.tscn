@@ -1,0 +1,49 @@
+[gd_scene format=3 uid="uid://buqm6b654jm4n"]
+
+[ext_resource type="Texture2D" uid="uid://c1gwihbywt2fu" path="res://assets/tileset/locked_door_top.png" id="1_4vqge"]
+[ext_resource type="Script" uid="uid://hi0iriydcjkj" path="res://scenes/locked_door.gd" id="1_ql41k"]
+[ext_resource type="Texture2D" uid="uid://cjl2u4c4b4o0n" path="res://assets/tileset/locked_door_side.png" id="2_30sld"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_4vqge"]
+size = Vector2(168, 256)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_30sld"]
+size = Vector2(256, 240)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ql41k"]
+radius = 248.129
+
+[node name="LockedDoor" type="StaticBody2D" unique_id=489656728]
+script = ExtResource("1_ql41k")
+
+[node name="SideLockedDoor" type="Sprite2D" parent="." unique_id=788450035]
+visible = false
+position = Vector2(0, 90)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("2_30sld")
+
+[node name="SideCollisionShape" type="CollisionShape2D" parent="." unique_id=1180485879]
+visible = false
+position = Vector2(0, 90)
+shape = SubResource("RectangleShape2D_4vqge")
+disabled = true
+
+[node name="UpperLockedDoor" type="Sprite2D" parent="." unique_id=1933631843]
+visible = false
+position = Vector2(96, 0)
+scale = Vector2(0.65, 0.65)
+texture = ExtResource("1_4vqge")
+
+[node name="UpperCollisionShape" type="CollisionShape2D" parent="." unique_id=1957888828]
+visible = false
+position = Vector2(96, 0)
+shape = SubResource("RectangleShape2D_30sld")
+disabled = true
+
+[node name="Area2D" type="Area2D" parent="." unique_id=2068743234]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=910633871]
+position = Vector2(72, 48)
+shape = SubResource("CircleShape2D_ql41k")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

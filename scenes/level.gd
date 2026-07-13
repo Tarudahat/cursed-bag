@@ -8,15 +8,18 @@ class_name Level
 @export var hole_gen_rate := 50
 @export var pot_gen_rate := 100
 @export var max_pot_count := 10
+@export var minimum_rooms_before_lock_count := 6
 
-var blast_node = preload("res://tp_area.tscn")
+var tp_area = preload("res://tp_area.tscn")
 var exit = preload("res://scenes/next_lvl.tscn")
-var mage_enemy = preload("res://entities/enemies/caster.tscn")
-var ghost_enemy = preload("res://entities/enemies/ghost.tscn")
-var turret_enemy = preload("res://entities/enemies/turret.tscn")
 var shop = preload("res://scenes/shop.tscn")
+
 var pot = preload("res://entities/pot.tscn")
 
+var locked_door = preload("res://scenes/locked_door.tscn")
+var key = preload("res://entities/key.tscn")
+
+var enemy_spawner = preload("res://entities/enemies/enemy_spawn_area.tscn")
 var spawned_mobs = false
 
 var room_buf := []
@@ -30,6 +33,8 @@ var room_pos_tiles: Array[Vector4i] = []
 var map := Array()
 var min_coord := Vector2i.MAX
 var map_size := Vector2i.ZERO
+
+var fused_rooms_count: int = 0
 
 const door_tiles_src_pos = [Vector2i(0, -2), Vector2i(0, -1), Vector2i(1, -2), Vector2i(1, -1), Vector2i(2, -2), Vector2i(3, -2), Vector2i(2, -1), Vector2i(3, -1)]
 const merge_patterns = \
@@ -62,8 +67,8 @@ func place_door(pos: Vector2i, dir: Vector2):
 	var door_pos = $tilemap.map_to_local(pos) * 0.5
 	var door_dis = 600
 	
-	var tp = blast_node.instantiate()
-	var tp2 = blast_node.instantiate()
+	var tp = tp_area.instantiate()
+	var tp2 = tp_area.instantiate()
 	
 	if dir == Vector2.UP:
 		paste_tile_region(pos, doors_buf[2])
@@ -175,6 +180,7 @@ func init_map_buffers():
 func gen_map_layout():
 	var current_room = Vector4i(0, 0, 0, 0)
 	room_pos_tiles.append(current_room)
+	var should_lock_rooms_pos: Array = []
 
 	min_coord = Vector2i.ZERO
 	var max_coord = Vector2i.ZERO
@@ -183,6 +189,7 @@ func gen_map_layout():
 		var dx = 0
 		var dy = 0
 		var new_room = current_room
+		var should_lock_entrance = false
 		while true:
 			dx = 0
 			dy = 0
@@ -201,6 +208,8 @@ func gen_map_layout():
 			# 20% - to generate adjacent to an existing room
 			if randi_range(0, 100) > 80:
 				current_room = room_pos_tiles[randi_range(0, len(room_pos_tiles) - 1)]
+				# mark entry to new room as should lock
+				should_lock_entrance = room_pos_tiles.size() >= minimum_rooms_before_lock_count && randi_range(0, 100) > 0 # - (r / rooms) * 85
 
 			# calc new room coord
 			new_room = current_room + Vector4i(dx * room_size.x, dy * room_size.y, 0, 0)
@@ -222,13 +231,13 @@ func gen_map_layout():
 		if r < rooms:
 			# cur -> new, exit door + entry door
 			if new_room.y < current_room.y:
-				door_placement_buf.append([get_room_pos(current_room), Vector2.UP])
+				door_placement_buf.append([get_room_pos(current_room), Vector2.UP, should_lock_entrance])
 			elif new_room.y > current_room.y:
-				door_placement_buf.append([get_room_pos(new_room), Vector2.DOWN])
+				door_placement_buf.append([get_room_pos(new_room), Vector2.DOWN, should_lock_entrance])
 			if new_room.x < current_room.x:
-				door_placement_buf.append([get_room_pos(current_room), Vector2.LEFT])
+				door_placement_buf.append([get_room_pos(current_room), Vector2.LEFT, should_lock_entrance])
 			elif new_room.x > current_room.x:
-				door_placement_buf.append([get_room_pos(new_room), Vector2.RIGHT])
+				door_placement_buf.append([get_room_pos(new_room), Vector2.RIGHT, should_lock_entrance])
 
 		current_room = new_room
 
@@ -275,13 +284,22 @@ func can_fuse(pos: Vector2i, pattern_id: int):
 	return true
 
 func fuse(pos: Vector2i, pattern_id: int):
+	var fused_area_state_array: PackedByteArray
+	var group_cam_limits: PackedVector2Array = [Vector2(INF, INF), Vector2(-1 * INF, -1 * INF)]
+	fused_area_state_array.resize(merge_patterns[pattern_id].size())
+	EnemySpawnArea.group_member_count = 0
+	
 	for comp in merge_patterns[pattern_id]:
 		var room_pos = pos + Vector2i(comp.x, comp.y)
 		var tile = map[room_pos.y][room_pos.x]
+		
+		# fuse spawn areas by adding to the same group
+		place_enemy_spawner((room_pos + min_coord) * room_size, fused_rooms_count, fused_area_state_array, group_cam_limits)
+		
 		if tile != null:
 			map[room_pos.y][room_pos.x].x = pattern_id
-			print(room_pos)
 			paste_tile_region((room_pos + min_coord) * room_size, walls_buf[comp.z])
+	fused_rooms_count += 1
 
 # merge rooms and place walls and constructions
 func gen_map_walls():
@@ -297,6 +315,9 @@ func gen_map_walls():
 				
 # place doors if still needed
 func gen_map_doors():
+	var key_having_rooms = []
+
+	var room_idx = 0
 	for door_placement in door_placement_buf:
 		var tilemap_pos = door_placement[0]
 		# calc door position
@@ -310,8 +331,46 @@ func gen_map_doors():
 			Vector2.RIGHT:
 				tilemap_pos += Vector2i(-2, floor(room_size.y / 2.0 - 1))
 
+		# place door
 		if $tilemap.get_cell_atlas_coords(tilemap_pos) != Vector2i(2, 1): # evil magic number
+			var key_room_idx = randi_range(minimum_rooms_before_lock_count, room_idx)
+
+			while key_room_idx < door_placement_buf.size() && door_placement_buf[key_room_idx][2] || key_room_idx in key_having_rooms:
+				key_room_idx = randi_range(minimum_rooms_before_lock_count, key_room_idx - 1)
+				
+			if key_room_idx - 1 <= minimum_rooms_before_lock_count || key_room_idx >= door_placement_buf.size(): # can't place key in a proper room
+				door_placement[2] = false
+					
+			if door_placement[2]:
+				# gen locked door
+				var locked_door_inst = locked_door.instantiate()
+				var locked_door_inst2 = locked_door.instantiate()
+
+				locked_door_inst.direction = door_placement[1]
+				locked_door_inst2.direction = -1 * door_placement[1]
+
+				locked_door_inst.position = $tilemap.map_to_local(tilemap_pos) * 0.5
+				self.add_child(locked_door_inst)
+
+				# gen key in one of the previous rooms
+				var key_inst = key.instantiate()
+				key_inst.position = $tilemap.map_to_local(door_placement_buf[key_room_idx][0] + Vector2i(floor(room_size.x / 2.0 - 1), floor(room_size.y / 2.0 - 1))) * 0.5
+				self.add_child(key_inst)
+
+				var locked_door2_dist = 534
+
+				locked_door_inst2.position = $tilemap.map_to_local(tilemap_pos) * 0.5 + locked_door_inst.direction * locked_door2_dist
+				key_having_rooms.append(key_room_idx)
+				self.add_child(locked_door_inst2)
+				
+				locked_door_inst.twin_node = locked_door_inst2
+				locked_door_inst2.twin_node = locked_door_inst
+				
+
+			# place the door
 			place_door(tilemap_pos, door_placement[1])
+		room_idx += 1
+		
 		
 func gen_pots():
 	for door_placement in door_placement_buf:
@@ -370,50 +429,24 @@ func spawn_pots(room_pos: Vector2i):
 		var pot_map_position = room_pos + rel_pos + Vector2i(2, 2)
 
 		if $tilemap.get_cell_atlas_coords(pot_map_position) == Vector2i(2, 1) && \
-			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.UP) != Vector2i(2, 1) || \
-			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.DOWN) != Vector2i(2, 1) || \
-			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.LEFT) != Vector2i(2, 1) || \
-			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.RIGHT) != Vector2i(2, 1):
+			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.UP) == Vector2i(4, 0) || \
+			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.DOWN) == Vector2i(5, 0) || \
+			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.LEFT) == Vector2i(4, 1) || \
+			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.RIGHT) == Vector2i(4, 2):
 			var p = pot.instantiate()
 			p.position = $tilemap.map_to_local(pot_map_position) * 0.5
 			add_child(p)
 			move_child(p, 1)
 
-func spawn_enemies(room_pos: Vector2i):
-	var room_center = ($tilemap.map_to_local(room_pos) + Vector2(7.5 * 355, 4.5 * 355)) * 0.5
-	
-	var enemy = null
-	var choice = randi_range(0, 2)
-	var count = 0
-	
-	if choice == 0:
-		count = randi_range(2, 5) + Globals.current_level * 2
-	elif choice == 1:
-		count = 1 + Globals.current_level
-		if count > 3:
-			count = 3
-	elif choice == 2:
-		count = 1 + Globals.current_level
-		if count > 3:
-			count = 3
-	
-	for i in range(count):
-		if choice == 0:
-			enemy = ghost_enemy.instantiate()
-			enemy.position = room_center + Vector2(randi_range(-1, 1) * 500, randi_range(-1, 1) * 400)
-		elif choice == 1:
-			enemy = turret_enemy.instantiate()
-			enemy.position = room_center + Vector2(randi_range(-1, 1) * 500, randi_range(-1, 1) * 400)
-		else:
-			enemy = mage_enemy.instantiate()
-			enemy.position = room_center
-		
-		if enemy.get_parent() != null:
-			remove_child(enemy)
-		add_child(enemy)
-		
-		if choice == 2:
-			enemy.position = room_center + Vector2(randi_range(-1, 1), randi_range(-1, 1)) * 500
+func place_enemy_spawner(room_pos: Vector2i, group_id: int, group_state_array: PackedByteArray, group_cam_limits: PackedVector2Array):
+	var room_center = $tilemap.map_to_local(room_pos + room_size / 2) / 2 - Vector2(355, 355) / 4
+	var spawner = enemy_spawner.instantiate()
+	spawner.position = room_center
+	spawner.group_id = fused_rooms_count
+	spawner.group_state_array = group_state_array
+	spawner.group_cam_limits = group_cam_limits
+	spawner.add_to_group(EnemySpawnArea.GROUP_PREFIX + str(group_id))
+	add_child(spawner)
 
 func spawn_shop(room_pos):
 	var room_center = $tilemap.map_to_local(room_pos) * 0.5 + Vector2(1150, 900)
@@ -426,20 +459,22 @@ func _ready() -> void:
 	rooms = Globals.level_room_count[Globals.current_level]
 	gen_map_layout()
 	gen_map_walls()
-	gen_pots()
 	gen_map_doors()
+	gen_pots()
 	
 func _process(_delta: float) -> void:
 	var shop_room = get_room_pos(room_pos_tiles[randi_range(1, len(room_pos_tiles) - 2)])
 	
 	if not spawned_mobs:
 		Globals.minimap.draw_map(map)
+		Globals.minimap.room_size = room_size
+		Globals.minimap.min_coord = min_coord
+		Globals.minimap.level_tilemap = $tilemap
 
 		for room in room_pos_tiles:
 			var pos = get_room_pos(room)
 			if pos != Vector2i.ZERO:
 				if shop_room == pos:
 					spawn_shop(pos)
-				else:
-					spawn_enemies(pos)
+					
 		spawned_mobs = true

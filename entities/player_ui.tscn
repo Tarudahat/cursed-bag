@@ -1,0 +1,99 @@
+[gd_scene format=3 uid="uid://dunn4u6poyyst"]
+
+[ext_resource type="Script" uid="uid://d0y17p1hesxov" path="res://entities/player_ui.gd" id="1_cj2p6"]
+[ext_resource type="Texture2D" uid="uid://yakrueyq25s" path="res://assets/items/heart2.png" id="2_cqkum"]
+[ext_resource type="Texture2D" uid="uid://bdfmu0bikou5x" path="res://assets/items/dia2.png" id="3_iamc5"]
+[ext_resource type="Texture2D" uid="uid://b64o5f027h2al" path="res://assets/UI/empty_curse.png" id="4_wq7df"]
+[ext_resource type="Texture2D" uid="uid://dvfc3oxu7oxnv" path="res://assets/UI/full_curse.png" id="5_61xvw"]
+[ext_resource type="PackedScene" uid="uid://dhijonbin4m85" path="res://entities/minimap.tscn" id="6_cmtny"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="7_ddkst"]
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0i614"]
+load_path = "res://.godot/imported/heart1.png-05ac3a86e8a3c940d810b4634b9c5e53.ctex"
+
+[sub_resource type="AnimatedTexture" id="AnimatedTexture_i623q"]
+frames = 2
+speed_scale = 3.0
+frame_0/texture = SubResource("CompressedTexture2D_0i614")
+frame_1/texture = ExtResource("2_cqkum")
+frame_1/duration = 1.0
+
+[sub_resource type="CompressedTexture2D" id="CompressedTexture2D_kdgjc"]
+load_path = "res://.godot/imported/dia1.png-20e6890d78c94a2b69599aedb01f25d7.ctex"
+
+[sub_resource type="AnimatedTexture" id="AnimatedTexture_tjdhl"]
+frames = 2
+speed_scale = 3.0
+frame_0/texture = SubResource("CompressedTexture2D_kdgjc")
+frame_1/texture = ExtResource("3_iamc5")
+frame_1/duration = 1.0
+
+[node name="CanvasLayerUI" type="CanvasLayer" unique_id=605686335]
+scale = Vector2(0.67, 0.67)
+transform = Transform2D(0.67, 0, 0, 0.67, 0, 0)
+
+[node name="PlayerUI" type="Control" parent="." unique_id=1247886930]
+layout_mode = 3
+anchors_preset = 0
+offset_left = 382.08957
+offset_right = 422.08957
+offset_bottom = 40.0
+script = ExtResource("1_cj2p6")
+metadata/_edit_use_anchors_ = true
+
+[node name="PanelContainer" type="HBoxContainer" parent="PlayerUI" unique_id=1100230510]
+layout_mode = 1
+offset_left = -358.0
+offset_top = 16.0
+offset_right = -238.0
+offset_bottom = 56.0
+scale = Vector2(3.745477, 3.745477)
+
+[node name="TextureRect" type="TextureRect" parent="PlayerUI/PanelContainer" unique_id=185697854]
+layout_mode = 2
+texture = SubResource("AnimatedTexture_i623q")
+expand_mode = 2
+
+[node name="HP_BAR" type="Label" parent="PlayerUI/PanelContainer" unique_id=220354497]
+modulate = Color(1, 0.30980393, 0.80784315, 1)
+z_index = 4096
+layout_mode = 2
+text = "HP: "
+
+[node name="TextureRect2" type="TextureRect" parent="PlayerUI/PanelContainer" unique_id=980835945]
+layout_mode = 2
+texture = SubResource("AnimatedTexture_tjdhl")
+expand_mode = 2
+
+[node name="GEM_BAR" type="Label" parent="PlayerUI/PanelContainer" unique_id=935583263]
+modulate = Color(0.30980393, 0.65882355, 1, 1)
+z_index = 4096
+layout_mode = 2
+text = "GEMS:"
+
+[node name="curbar" type="TextureProgressBar" parent="PlayerUI" unique_id=718704234]
+layout_mode = 0
+offset_left = -368.0
+offset_top = 184.0
+offset_right = 25.0
+offset_bottom = 937.0
+scale = Vector2(0.6799927, 0.6799927)
+fill_mode = 3
+texture_under = ExtResource("4_wq7df")
+texture_progress = ExtResource("5_61xvw")
+
+[node name="minimap" parent="PlayerUI" unique_id=137579781 instance=ExtResource("6_cmtny")]
+position = Vector2(1678, 70)
+scale = Vector2(2, 2)
+
+[node name="BossBar" type="TextureProgressBar" parent="PlayerUI" unique_id=549631370]
+layout_mode = 0
+offset_left = 408.0
+offset_top = 38.999985
+offset_right = 536.0
+offset_bottom = 166.99998
+scale = Vector2(8.819362, 0.6655925)
+texture_under = ExtResource("7_ddkst")
+texture_progress = ExtResource("7_ddkst")
+tint_under = Color(0, 0, 0, 1)
+tint_progress = Color(12.8605, 0.042388093, 10.238218, 1)
