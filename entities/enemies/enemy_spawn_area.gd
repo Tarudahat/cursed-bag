@@ -60,6 +60,11 @@ func _on_body_entered(body: Node2D) -> void:
 		group_state_array[group_member_idx] = 1
 		get_tree().call_group(GROUP_PREFIX + str(group_id), "activate_or_spawn_enemies")
 
+		if !body.screen_change_cam_target_set && body.should_change_screen_target && body.moved_room:
+			body.screen_change_cam_target = global_position
+			body.get_node("Camera2D").global_position = body.get_node("Camera2D").get_screen_center_position()
+			body.screen_change_cam_target_set = true
+			
 		body.group_cam_limits = group_cam_limits
 		
 func _on_body_exited(body: Node2D) -> void:

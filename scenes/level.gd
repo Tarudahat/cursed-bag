@@ -63,9 +63,9 @@ func get_room_merge_state(v4: Vector4i) -> int:
 func get_room_biome(v4: Vector4i) -> int:
 	return v4.w
 
-func place_door(pos: Vector2i, dir: Vector2):
-	var door_pos = $tilemap.map_to_local(pos) * 0.5
-	var door_dis = 600
+func place_door(pos: Vector2i, dir: Vector2, tilemap: TileMapLayer = $tilemap):
+	var door_pos = tilemap.map_to_local(pos) * 0.5
+	var door_dis = 475
 	
 	var tp = tp_area.instantiate()
 	var tp2 = tp_area.instantiate()
@@ -74,28 +74,28 @@ func place_door(pos: Vector2i, dir: Vector2):
 		paste_tile_region(pos, doors_buf[2])
 		paste_tile_region(pos + Vector2i.UP * 3, doors_buf[3])
 		door_pos += Vector2.RIGHT * 84
-		door_pos += Vector2.DOWN * 35
+		door_pos += Vector2.UP * 30
 	elif dir == Vector2.DOWN:
 		paste_tile_region(pos, doors_buf[3])
 		paste_tile_region(pos + Vector2i.DOWN * 3, doors_buf[2])
 		door_pos += Vector2.RIGHT * 84
-		door_pos += Vector2.UP * 35
+		door_pos += Vector2.DOWN * 30
 	elif dir == Vector2.LEFT:
 		paste_tile_region(pos, doors_buf[0])
 		paste_tile_region(pos + Vector2i.LEFT * 3, doors_buf[1])
 		door_pos += Vector2.DOWN * 84
-		door_pos += Vector2.LEFT * 20
-		door_dis = 490
-		tp.dist = 750
-		tp2.dist = 750
+		door_pos += Vector2.LEFT * 84
+		door_dis = 356
+		tp.dist = 750 - 100
+		tp2.dist = 750 - 100
 	else: # RIGHT
 		paste_tile_region(pos, doors_buf[1])
 		paste_tile_region(pos + Vector2i.RIGHT * 3, doors_buf[0])
-		door_pos += Vector2.DOWN * 84
-		door_pos += Vector2.RIGHT * 20
-		door_dis = 490
-		tp.dist = 750
-		tp2.dist = 750
+		door_pos += Vector2.DOWN * 84 
+		door_pos += Vector2.RIGHT * 84
+		door_dis = 356
+		tp.dist = 750 - 100
+		tp2.dist = 750 - 100
 		
 	tp.dir = dir
 	tp.position = door_pos
@@ -105,7 +105,7 @@ func place_door(pos: Vector2i, dir: Vector2):
 	add_child(tp)
 	add_child(tp2)
 	
-func copy_tile_region(from_pos: Vector2i, region_size: Vector2i, buffer: Array):
+func copy_tile_region(from_pos: Vector2i, region_size: Vector2i, buffer: Array, tilemap: TileMapLayer = $tilemap):
 	buffer.clear()
 
 	for x in region_size.x:
@@ -113,18 +113,18 @@ func copy_tile_region(from_pos: Vector2i, region_size: Vector2i, buffer: Array):
 		for y in region_size.y:
 			var pos = from_pos + Vector2i(x, y)
 
-			var source_id = $tilemap.get_cell_source_id(pos)
+			var source_id = tilemap.get_cell_source_id(pos)
 
 			if source_id == -1:
 				buffer[x].append(null)
 			else:
 				buffer[x].append({
 					"source_id": source_id,
-					"atlas_coords": $tilemap.get_cell_atlas_coords(pos),
-					"alternative": $tilemap.get_cell_alternative_tile(pos)
+					"atlas_coords": tilemap.get_cell_atlas_coords(pos),
+					"alternative": tilemap.get_cell_alternative_tile(pos)
 				})
 				
-func paste_tile_region(to_pos: Vector2i, buffer: Array):
+func paste_tile_region(to_pos: Vector2i, buffer: Array, tilemap: TileMapLayer = $tilemap):
 	if buffer.is_empty():
 		return
 
@@ -134,18 +134,18 @@ func paste_tile_region(to_pos: Vector2i, buffer: Array):
 			var target = to_pos + Vector2i(x, y)
 
 			if data != null:
-				$tilemap.set_cell(
+				tilemap.set_cell(
 					target,
 					data.source_id,
 					data.atlas_coords,
 					data.alternative
 				)
 
-func clear_tile_region(from_pos: Vector2i, region_size: Vector2i):
+func clear_tile_region(from_pos: Vector2i, region_size: Vector2i, tilemap: TileMapLayer = $tilemap):
 	for x in region_size.x:
 		for y in region_size.y:
 			var pos = from_pos + Vector2i(x, y)
-			$tilemap.erase_cell(pos)
+			tilemap.erase_cell(pos)
 
 func init_map_buffers():
 	# copy the door tiles into buffers
@@ -270,6 +270,8 @@ func gen_map_layout():
 	var exit_node = exit.instantiate()
 	exit_node.position = ($tilemap.map_to_local(get_room_pos(current_room)) + Vector2(7.5 * 355, 4.5 * 355)) * 0.5
 	add_child(exit_node)
+	move_child(exit_node, 1)
+	
 
 
 # is the given pattern found at the given position on the map?
@@ -294,7 +296,8 @@ func fuse(pos: Vector2i, pattern_id: int):
 		var tile = map[room_pos.y][room_pos.x]
 		
 		# fuse spawn areas by adding to the same group
-		place_enemy_spawner((room_pos + min_coord) * room_size, fused_rooms_count, fused_area_state_array, group_cam_limits)
+		var spawn_enemies = !(room_pos + min_coord == Vector2i.ZERO)
+		place_enemy_spawner((room_pos + min_coord) * room_size, fused_rooms_count, fused_area_state_array, group_cam_limits, spawn_enemies)
 		
 		if tile != null:
 			map[room_pos.y][room_pos.x].x = pattern_id
@@ -406,7 +409,7 @@ func gen_line_holes(room_tilemap_position: Vector2i):
 				$tilemap.set_cell(
 						tile_pos + room_tilemap_position,
 						0,
-						Vector2i(1, 1),
+						Vector2i(0, 3),
 						0
 					)
 					
@@ -438,13 +441,14 @@ func spawn_pots(room_pos: Vector2i):
 			add_child(p)
 			move_child(p, 1)
 
-func place_enemy_spawner(room_pos: Vector2i, group_id: int, group_state_array: PackedByteArray, group_cam_limits: PackedVector2Array):
+func place_enemy_spawner(room_pos: Vector2i, group_id: int, group_state_array: PackedByteArray, group_cam_limits: PackedVector2Array, spawn_enemies: bool = true):
 	var room_center = $tilemap.map_to_local(room_pos + room_size / 2) / 2 - Vector2(355, 355) / 4
 	var spawner = enemy_spawner.instantiate()
 	spawner.position = room_center
 	spawner.group_id = fused_rooms_count
 	spawner.group_state_array = group_state_array
 	spawner.group_cam_limits = group_cam_limits
+	spawner.spawned_enemies = !spawn_enemies
 	spawner.add_to_group(EnemySpawnArea.GROUP_PREFIX + str(group_id))
 	add_child(spawner)
 
@@ -461,6 +465,7 @@ func _ready() -> void:
 	gen_map_walls()
 	gen_map_doors()
 	gen_pots()
+
 	
 func _process(_delta: float) -> void:
 	var shop_room = get_room_pos(room_pos_tiles[randi_range(1, len(room_pos_tiles) - 2)])

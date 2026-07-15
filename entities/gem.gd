@@ -1,20 +1,27 @@
 extends CharacterBody2D
 
-@export var value = 5
+@export var value = 1
 
 var player_node: Player = null
 var player_in_range: bool = false
+var pull_mulitplyr = 42.0
+
+var can_be_collected: bool = false
+var is_being_collected: bool = false
 
 func _ready() -> void:
 	$gem/Sprite2D.play(str(randi_range(0, 1)))
 	velocity = Vector2(randf_range(-1, 1) * 1300, randf_range(-1, 1) * 1300)
+	
+	if Globals.player_node.has_item(Player.Items.GEM_MAGNET):
+		pull_mulitplyr = 50.0
+		$AttractionField/CollisionShape2D.shape.radius *= 1.5
 
 func _physics_process(delta: float) -> void:
-	if player_node != null && player_in_range:
-		var pull_mulitplyr = 25.0
-		if player_node.has_item(Player.Items.GEM_MAGNET):
-			pull_mulitplyr = 50.0
-		velocity += position.direction_to(player_node.position) * 10 / position.distance_to(player_node.position) / 0.005
+	if player_node != null && player_in_range && can_be_collected:
+		set_collision_mask_value(1, false)
+		pull_mulitplyr += 45
+		velocity = position.direction_to(player_node.position) * pull_mulitplyr / position.distance_to(player_node.position) / 0.005
 	if velocity != Vector2.ZERO:
 		move_and_slide()
 
@@ -35,7 +42,10 @@ func _on_attraction_field_area_entered(area: Area2D) -> void:
 		player_node = area.get_parent()
 		player_in_range = true
 
-
 func _on_attraction_field_area_exited(area: Area2D) -> void:
 	if area.get_parent() is Player and area != null and area.get_name() == "atk_hitbox":
+		player_node = area.get_parent()
 		player_in_range = false
+
+func _on_timer_timeout() -> void:
+	can_be_collected = true

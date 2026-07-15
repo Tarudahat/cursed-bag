@@ -4,8 +4,14 @@ class_name Player
 const SPEED = 720.0
 const JUMP_VELOCITY = -400.0
 
-const CAM_SPEED = 800
+const CAM_SPEED = 900
+const CAM_SCRN_CHANGE_SPEED = 800 * 5.2
 const MAX_CAM_DIST = 300.0
+
+var screen_change_cam_target: Vector2
+var should_change_screen_target: bool = false
+var screen_change_cam_target_set: bool = false
+var moved_room: bool = false
 
 var cam_target_distance = 0
 var cam_target_direction: Vector2
@@ -13,7 +19,6 @@ var group_cam_limits: PackedVector2Array
 
 enum Items {GEM_MAGNET}
 var inventory: Array[Items] = []
-var current_room_id: int = -1
 
 var current_sword_look = Vector2.ZERO
 var current_sword_speed = 20
@@ -64,18 +69,19 @@ func _ready() -> void:
 		Globals.curse_cap = curse_cap
 	
 	$sprite.material.set_shader_parameter("enabled", false)
-	
+	$Camera2D.top_level = true
 	$Camera2D.global_position = global_position
 
 
 func _process(delta: float) -> void:
+	
 	# camera panning
 	if !group_cam_limits.is_empty():
 		$Camera2D.limit_top = group_cam_limits[0].y
 		$Camera2D.limit_left = group_cam_limits[0].x
 		$Camera2D.limit_bottom = group_cam_limits[1].y
 		$Camera2D.limit_right = group_cam_limits[1].x
-
+	
 	var a = curse_cap - gems
 
 	if hp <= 0:
@@ -157,16 +163,32 @@ func _physics_process(delta: float) -> void:
 		$Sword.z_index = 0
 	if direction:
 		velocity = direction * SPEED
-		cam_target_distance = move_toward(cam_target_distance, MAX_CAM_DIST, SPEED * delta / 2)
+		cam_target_distance = move_toward(cam_target_distance, MAX_CAM_DIST, CAM_SPEED * delta)
 		cam_target_distance = clamp(cam_target_distance, -MAX_CAM_DIST, MAX_CAM_DIST)
 		cam_target_direction = direction
 	else:
 		velocity.x = move_toward(velocity.x, 0, SPEED)
 		velocity.y = move_toward(velocity.y, 0, SPEED)
+		
 	
-	var cam_target = global_position + cam_target_direction * cam_target_distance
-	$Camera2D.global_position.x = move_toward($Camera2D.global_position.x, cam_target.x, CAM_SPEED * delta)
-	$Camera2D.global_position.y = move_toward($Camera2D.global_position.y, cam_target.y, CAM_SPEED * delta)
+	if should_change_screen_target:
+		velocity = Vector2.ZERO
+		cam_target_distance = 0
+
+		if screen_change_cam_target_set:
+			$Camera2D.limit_enabled = !should_change_screen_target
+			$Camera2D.global_position.x = move_toward($Camera2D.global_position.x, screen_change_cam_target.x, CAM_SCRN_CHANGE_SPEED * delta)
+			$Camera2D.global_position.y = move_toward($Camera2D.global_position.y, screen_change_cam_target.y, CAM_SCRN_CHANGE_SPEED * delta * 10/16)
+			
+			if screen_change_cam_target.is_equal_approx($Camera2D.global_position):
+				should_change_screen_target = false
+				screen_change_cam_target_set = false
+				$Camera2D.limit_enabled = true
+	else:
+		if direction:
+			var cam_target = global_position + cam_target_direction * cam_target_distance
+			$Camera2D.global_position.x = move_toward($Camera2D.global_position.x, cam_target.x, CAM_SPEED * delta)
+			$Camera2D.global_position.y = move_toward($Camera2D.global_position.y, cam_target.y, CAM_SPEED * delta)
 		
 	var target_look_coord = get_local_mouse_position()
 	
@@ -186,6 +208,7 @@ func _physics_process(delta: float) -> void:
 	
 	if in_air:
 		set_collision_mask_value(2, false) # let pass through
+		set_collision_layer_value(6, false) # let pass through, doors
 		$atk_hitbox.set_collision_mask_value(2, false) # let pass through no dmg
 		if air_t < PI / 2:
 			air_t += 4 * delta
@@ -203,6 +226,7 @@ func _physics_process(delta: float) -> void:
 			$Shield.position.y = 0
 			in_air = false
 			set_collision_mask_value(2, true)
+			set_collision_layer_value(6, true) # let pass through, doors
 			$atk_hitbox.set_collision_mask_value(2, true) # let pass through no dmg
 			
 			air_t = 0
