@@ -16,6 +16,9 @@ var should_start_go_to_spear: bool = false
 var should_return_to_marching: bool = false
 var original_marching_position: Vector2
 
+var jab_atk_base_wait_time: float
+var throw_atk_base_wait_time: float
+
 func _ready() -> void:
 	super()
 	speed = 400
@@ -25,6 +28,9 @@ func _ready() -> void:
 	spr_inst.spear_owner = self
 	spr_inst.rotation_degrees = -70
 	add_child(spr_inst)
+	
+	jab_atk_base_wait_time = $jab_cooldown.wait_time
+	throw_atk_base_wait_time = $throw_atk_cooldown.wait_time
 
 func _physics_process(_delta: float) -> void:
 	if !spr_inst.on_ground:
@@ -67,8 +73,10 @@ func _physics_process(_delta: float) -> void:
 		# ranged atk cooldown
 		if !spr_inst.being_thrown && !spr_inst.being_jabbed:
 			if !can_throw && $throw_atk_cooldown.time_left == 0 && $jab_cooldown.time_left == 0:
+				$throw_atk_cooldown.wait_time = throw_atk_base_wait_time + randf_range(-1.0, 2.0)
 				$throw_atk_cooldown.start()
 			if !can_jab && $jab_cooldown.time_left == 0:
+				$jab_cooldown.wait_time = jab_atk_base_wait_time + randf_range(-0.1, 0.1)
 				$jab_cooldown.start()
 
 	char_entity_move_and_slide()

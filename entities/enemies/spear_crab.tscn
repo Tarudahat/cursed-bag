@@ -7,10 +7,10 @@
 radius = 50.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_qeh8f"]
-radius = 1200.0
+radius = 1344.0238
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_l0qf8"]
-radius = 450.0
+radius = 513.5601
 
 [node name="SpearCrab" type="CharacterBody2D" unique_id=1667036106]
 collision_layer = 4
