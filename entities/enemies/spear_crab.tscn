@@ -1,0 +1,58 @@
+[gd_scene format=3 uid="uid://48fqoio04jt5"]
+
+[ext_resource type="Script" uid="uid://b2hletfj1ht6a" path="res://entities/enemies/spear_crab.gd" id="1_jy7ln"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="2_axs1w"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_axs1w"]
+radius = 50.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_qeh8f"]
+radius = 1200.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_l0qf8"]
+radius = 450.0
+
+[node name="SpearCrab" type="CharacterBody2D" unique_id=1667036106]
+collision_layer = 4
+collision_mask = 7
+platform_on_leave = 2
+script = ExtResource("1_jy7ln")
+hp = 20
+metadata/_custom_type_script = "uid://dhalpxunvn8ux"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1152901304]
+modulate = Color(1, 0.23137255, 0.21568628, 1)
+light_mask = 0
+texture = ExtResource("2_axs1w")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=367250796]
+shape = SubResource("CircleShape2D_axs1w")
+
+[node name="ranged_area" type="Area2D" parent="." unique_id=2033100235]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ranged_area" unique_id=562081232]
+shape = SubResource("CircleShape2D_qeh8f")
+
+[node name="close_area" type="Area2D" parent="." unique_id=1739916792]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="close_area" unique_id=695330404]
+shape = SubResource("CircleShape2D_l0qf8")
+
+[node name="throw_atk_cooldown" type="Timer" parent="." unique_id=564609240]
+wait_time = 6.0
+autostart = true
+
+[node name="jab_cooldown" type="Timer" parent="." unique_id=1173456927]
+wait_time = 3.0
+autostart = true
+
+[connection signal="body_entered" from="ranged_area" to="." method="_on_ranged_area_body_entered"]
+[connection signal="body_exited" from="ranged_area" to="." method="_on_ranged_area_body_exited"]
+[connection signal="body_entered" from="close_area" to="." method="_on_close_area_body_entered"]
+[connection signal="body_exited" from="close_area" to="." method="_on_close_area_body_exited"]
+[connection signal="timeout" from="throw_atk_cooldown" to="." method="_on_atk_cooldown_timeout"]
+[connection signal="timeout" from="jab_cooldown" to="." method="_on_jab_cooldown_timeout"]

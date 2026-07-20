@@ -1,4 +1,4 @@
-extends StaticEnemy
+extends CharEnemy
 
 @export var max_value = 3
 
@@ -6,10 +6,6 @@ extends StaticEnemy
 func _ready() -> void:
 	super()
 
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
-	pass
 
 func _on_died() -> void:
 	for i in randi_range(0, max_value):
@@ -20,4 +16,4 @@ func _on_died() -> void:
 	
 	$whole.visible = false
 	$broken.visible = true
-	$CollisionShape2D.set_deferred("disabled",true)
+	$CollisionShape2D.set_deferred("disabled", true)

@@ -14,10 +14,10 @@ var tp_area = preload("res://tp_area.tscn")
 var exit = preload("res://scenes/next_lvl.tscn")
 var shop = preload("res://scenes/shop.tscn")
 
-var pot = preload("res://entities/pot.tscn")
+var pot = preload("res://entities/terrain/pot.tscn")
 
 var locked_door = preload("res://scenes/locked_door.tscn")
-var key = preload("res://entities/key.tscn")
+var key = preload("res://entities/misc/key.tscn")
 
 var enemy_spawner = preload("res://entities/enemies/enemy_spawn_area.tscn")
 var spawned_mobs = false
@@ -53,6 +53,19 @@ const merge_rates = \
 	30,
 	100
 ]
+
+		
+func global_to_tilemap(global_coord: Vector2) -> Vector2i:
+	var on_tilemap_coord = $tilemap.local_to_map(to_local(global_coord) * 2) * 1.0
+	return on_tilemap_coord
+
+func global_to_room(global_coord: Vector2) -> Vector2i:
+	var coord = global_to_tilemap(global_coord) * 1.0 / (room_size * 1.0) - min_coord * 1.0
+	return coord
+
+func tilemap_to_global(tilemap_coord: Vector2i) -> Vector2:
+	return to_global($tilemap.map_to_local(tilemap_coord) * 0.5)
+
 
 func get_room_pos(v4: Vector4i) -> Vector2i:
 	return Vector2i(v4.x, v4.y)
@@ -91,7 +104,7 @@ func place_door(pos: Vector2i, dir: Vector2, tilemap: TileMapLayer = $tilemap):
 	else: # RIGHT
 		paste_tile_region(pos, doors_buf[1])
 		paste_tile_region(pos + Vector2i.RIGHT * 3, doors_buf[0])
-		door_pos += Vector2.DOWN * 84 
+		door_pos += Vector2.DOWN * 84
 		door_pos += Vector2.RIGHT * 84
 		door_dis = 356
 		tp.dist = 750 - 100
@@ -272,7 +285,6 @@ func gen_map_layout():
 	add_child(exit_node)
 	move_child(exit_node, 1)
 	
-
 
 # is the given pattern found at the given position on the map?
 func can_fuse(pos: Vector2i, pattern_id: int):
@@ -466,15 +478,17 @@ func _ready() -> void:
 	gen_map_doors()
 	gen_pots()
 
+	Globals.level_node = self
+
 	
 func _process(_delta: float) -> void:
 	var shop_room = get_room_pos(room_pos_tiles[randi_range(1, len(room_pos_tiles) - 2)])
 	
 	if not spawned_mobs:
-		Globals.minimap.draw_map(map)
-		Globals.minimap.room_size = room_size
-		Globals.minimap.min_coord = min_coord
-		Globals.minimap.level_tilemap = $tilemap
+		if Globals.minimap != null:
+			Globals.minimap.draw_map(map)
+			Globals.minimap.room_size = room_size
+			Globals.minimap.min_coord = min_coord
 
 		for room in room_pos_tiles:
 			var pos = get_room_pos(room)

@@ -1,33 +1,17 @@
-extends CharacterBody2D
+extends CharEntity
 class_name CharEnemy
 
-var gem = preload("res://entities/Gem.tscn")
+var gem = preload("res://entities/misc/gem.tscn")
 
-@export var hp = 10
-var max_hp = hp
 @export var value = 10
 @export var default_death = true
 
-@export var inv_time = 1.0
-@onready var dmg_timer: Timer
-
-var can_get_hit = true
-
-signal got_hit(hp, value)
-signal inv_end
-signal died
+var atk = 5
+var speed = 500
 
 func _ready() -> void:
-	max_hp = hp
-
-	dmg_timer = Timer.new()
-	if inv_time != null:
-		dmg_timer.wait_time = inv_time
-	else:
-		dmg_timer.wait_time = 1.0
-	
-	add_child(dmg_timer)
-	dmg_timer.timeout.connect(_on_dmg_timer_timeout)
+	super() # init hp and timers
+	auto_free_on_death = false
 
 func damage(amount: int) -> void:
 	if can_get_hit:
@@ -45,8 +29,3 @@ func damage(amount: int) -> void:
 					gem_inst.value = 1
 					get_parent().add_child.call_deferred(gem_inst)
 				self.queue_free()
-
-
-func _on_dmg_timer_timeout() -> void:
-	can_get_hit = true
-	emit_signal("inv_end")

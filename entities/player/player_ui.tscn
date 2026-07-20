@@ -1,11 +1,11 @@
 [gd_scene format=3 uid="uid://dunn4u6poyyst"]
 
-[ext_resource type="Script" uid="uid://d0y17p1hesxov" path="res://entities/player_ui.gd" id="1_cj2p6"]
+[ext_resource type="Script" uid="uid://c1b772huynfyw" path="res://entities/player/player_ui.gd" id="1_35srt"]
 [ext_resource type="Texture2D" uid="uid://yakrueyq25s" path="res://assets/items/heart2.png" id="2_cqkum"]
 [ext_resource type="Texture2D" uid="uid://bdfmu0bikou5x" path="res://assets/items/dia2.png" id="3_iamc5"]
 [ext_resource type="Texture2D" uid="uid://b64o5f027h2al" path="res://assets/UI/empty_curse.png" id="4_wq7df"]
 [ext_resource type="Texture2D" uid="uid://dvfc3oxu7oxnv" path="res://assets/UI/full_curse.png" id="5_61xvw"]
-[ext_resource type="PackedScene" uid="uid://dhijonbin4m85" path="res://entities/minimap.tscn" id="6_cmtny"]
+[ext_resource type="PackedScene" uid="uid://dhijonbin4m85" path="res://entities/player/minimap.tscn" id="6_35srt"]
 [ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="7_ddkst"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0i614"]
@@ -38,7 +38,7 @@ anchors_preset = 0
 offset_left = 382.08957
 offset_right = 422.08957
 offset_bottom = 40.0
-script = ExtResource("1_cj2p6")
+script = ExtResource("1_35srt")
 metadata/_edit_use_anchors_ = true
 
 [node name="PanelContainer" type="HBoxContainer" parent="PlayerUI" unique_id=1100230510]
@@ -82,9 +82,9 @@ fill_mode = 3
 texture_under = ExtResource("4_wq7df")
 texture_progress = ExtResource("5_61xvw")
 
-[node name="minimap" parent="PlayerUI" unique_id=137579781 instance=ExtResource("6_cmtny")]
-position = Vector2(1678, 70)
-scale = Vector2(2, 2)
+[node name="minimap" parent="PlayerUI" unique_id=137579781 instance=ExtResource("6_35srt")]
+position = Vector2(1913.4326, 94.02985)
+scale = Vector2(3, 3)
 
 [node name="BossBar" type="TextureProgressBar" parent="PlayerUI" unique_id=549631370]
 layout_mode = 0

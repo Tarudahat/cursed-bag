@@ -20,35 +20,32 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-
 	if agro:
 		var mov_dir = position.direction_to(plyr.position)
-		if shots<= shot_max && can_shoot:
+		if shots <= shot_max && can_shoot:
 			var blast = bullet_node.instantiate()
 			blast.speed = 300
 			blast.direction = mov_dir
-			blast.position = position + blast.direction*10
+			blast.position = position + blast.direction * 10
 			get_parent().add_child(blast)
 			can_shoot = false
-			shots+=1
+			shots += 1
 			$shotcooldown.start()
 			
-		if shots > shot_max && ! reloading:
+		if shots > shot_max && !reloading:
 			$tp_cooldown.start()
 			reloading = true
-			position = init_pos + Vector2(randi_range(-1,1),randi_range(-1,1)) *500
+			position = init_pos + Vector2(randi_range(-1, 1), randi_range(-1, 1)) * 500
 			Sounds.evil.play()
 			Sounds.evil.position = global_position
 			
 	velocity = Vector2.ZERO
-	move_and_slide()
+	char_entity_move_and_slide()
 	
 	for i in get_slide_collision_count():
 		var collider = get_slide_collision(i).get_collider()
 		if collider is Player:
 			collider.damage(5)
-
-
 
 
 func _on_got_hit(hp, val) -> void:

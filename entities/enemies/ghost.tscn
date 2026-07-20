@@ -36,11 +36,16 @@ animations = [{
 radius = 88.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_j4uan"]
-radius = 448.0714
+radius = 547.0329
 
 [node name="Ghost" type="CharacterBody2D" unique_id=665126917]
+collision_layer = 4
+collision_mask = 5
+motion_mode = 1
+platform_on_leave = 2
 script = ExtResource("1_djdh1")
-metadata/_custom_type_script = "uid://2g8pj2nuvxjr"
+value = 5
+auto_free_on_death = false
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1786150918]
 material = SubResource("ShaderMaterial_wuakj")
@@ -54,6 +59,8 @@ speed_scale = 2.0
 shape = SubResource("CircleShape2D_v78bc")
 
 [node name="Area2D" type="Area2D" parent="." unique_id=660927146]
+collision_layer = 0
+collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=100123056]
 shape = SubResource("CircleShape2D_j4uan")

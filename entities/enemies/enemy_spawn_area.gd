@@ -60,6 +60,7 @@ func _on_body_entered(body: Node2D) -> void:
 		group_state_array[group_member_idx] = 1
 		get_tree().call_group(GROUP_PREFIX + str(group_id), "activate_or_spawn_enemies")
 
+		# set camera vars for screen change
 		if !body.screen_change_cam_target_set && body.should_change_screen_target && body.moved_room:
 			body.screen_change_cam_target = global_position
 			body.get_node("Camera2D").global_position = body.get_node("Camera2D").get_screen_center_position()
@@ -81,7 +82,7 @@ func _process(_delta: float) -> void:
 
 func spawn_enemies():
 	var enemy = null
-	var choice = randi_range(0, 2)
+	var choice = randi_range(0, 3)
 	var count = 0
 
 	if choice == 0:
@@ -94,19 +95,28 @@ func spawn_enemies():
 		count = 1 + Globals.current_level
 		if count > 3:
 			count = 3
+	else:
+		count = 2 + Globals.current_level
+		if count > 3:
+			count = 3
 
-	var rnd_pos_offset = Vector2(randi_range(-4, 4) * 355 / 2.0, randf_range(-1.5, 1.5) * 355.0 / 2.0)
 	# todo make sure this does not end up on the doors
-
 	for i in range(count):
-		if choice == 0:
-			enemy = enemy_resources["ghost"].instantiate()
-		elif choice == 1:
-			enemy = enemy_resources["turret"].instantiate()
-		else:
-			enemy = enemy_resources["caster"].instantiate()
-			enemy.position = position
+		var rnd_pos_offset = Vector2(randi_range(-4, 4) * 355 / 2.0, randf_range(-1.5, 1.5) * 300.0 / 2.0)
 
+		match choice:
+			0:
+				enemy = enemy_resources["ghost"].instantiate()
+			1:
+				enemy = enemy_resources["turret"].instantiate()
+			2:
+				enemy = enemy_resources["caster"].instantiate()
+				enemy.position = position
+			3:
+				enemy = enemy_resources["spear_crab"].instantiate()
+				if global_position.x + 2000 > Globals.player_node.global_position.x || global_position.x - 2000 < Globals.player_node.global_position.x:
+					enemy.movement_direction = Vector2.UP
+				
 		if choice != 2:
 			enemy.position = position + rnd_pos_offset
 

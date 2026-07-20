@@ -16,23 +16,28 @@ shader_parameter/speed = 10.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_mgqau"]
 radius = 696.1839
 
-[node name="mage" type="CharacterBody2D" unique_id=1012179225]
+[node name="mage" type="CharacterBody2D" unique_id=1075770730]
+collision_layer = 4
+collision_mask = 5
 motion_mode = 1
-slide_on_ceiling = false
+platform_on_leave = 2
 script = ExtResource("1_c1o6b")
 hp = 30
-metadata/_custom_type_script = "uid://2g8pj2nuvxjr"
+auto_free_on_death = false
+metadata/_custom_type_script = "uid://dhalpxunvn8ux"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1741239435]
 shape = SubResource("CircleShape2D_nqo0b")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=261676458]
 material = SubResource("ShaderMaterial_62uum")
-rotation = 0.09250245
+rotation = 0.09250246
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("3_mgqau")
 
 [node name="Area2D" type="Area2D" parent="." unique_id=1028337766]
+collision_layer = 0
+collision_mask = 16
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=623904630]
 shape = SubResource("CircleShape2D_mgqau")

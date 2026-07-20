@@ -9,7 +9,7 @@ radius = 72.0
 [node name="Area2D" type="Area2D" unique_id=496307312]
 z_index = 1
 collision_layer = 0
-collision_mask = 32
+collision_mask = 2
 script = ExtResource("1_3e5mk")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=410844065]

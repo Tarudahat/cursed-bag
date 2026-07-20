@@ -1,12 +1,13 @@
-[gd_scene format=3 uid="uid://dpl2narjj0i7u"]
+[gd_scene format=3 uid="uid://d2d6c3k3a2orr"]
 
-[ext_resource type="Script" uid="uid://d1iuk6vr6i8sa" path="res://entities/sword_blast.gd" id="1_h2sfm"]
+[ext_resource type="Script" uid="uid://d1iuk6vr6i8sa" path="res://entities/player/sword_blast.gd" id="1_qffqh"]
 [ext_resource type="Texture2D" uid="uid://c3owdgmvphvdr" path="res://assets/player/swbl.png" id="2_h2sfm"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h2sfm"]
 
 [node name="sword_blast" type="Area2D" unique_id=762263630]
-script = ExtResource("1_h2sfm")
+collision_mask = 15
+script = ExtResource("1_qffqh")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1071513411]
 modulate = Color(0.4139335, 0.7244447, 0.8994777, 1)

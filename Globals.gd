@@ -13,6 +13,7 @@ var perm_shield = false
 var curse_cap = -1
 var minimap = null
 var player_node = null
+var level_node = null
 var boss = null
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -24,10 +25,17 @@ func get_lvl_inst():
 
 var current_level_node = null
 
+func bezier_curve(start: Vector2, mid: Vector2, end: Vector2, t_lerp: float) -> Vector2:
+	t_lerp = clampf(t_lerp, 0.0, 1.0)
+	var lerp0 = lerp(start, mid, t_lerp)
+	var lerp1 = lerp(mid, end, t_lerp)
+	return lerp(lerp0, lerp1, t_lerp)
+
 func next_level():
 	boss = null
 	minimap = null
 	player_node = null
+	level_node = null
 
 	if not Sounds.music.is_playing():
 		Sounds.music.play()

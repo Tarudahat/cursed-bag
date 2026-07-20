@@ -13,10 +13,12 @@ shader_parameter/speed = 10.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_h6tj7"]
 radius = 98.02041
 
-[node name="turret" type="StaticBody2D" unique_id=672909862]
-collision_mask = 0
+[node name="turret" type="CharacterBody2D" unique_id=1291861426]
+collision_layer = 4
+collision_mask = 5
 script = ExtResource("1_h6tj7")
 hp = 30
+auto_free_on_death = false
 metadata/_custom_type_script = "uid://cv28ldx1jvvp3"
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1834845443]

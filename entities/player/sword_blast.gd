@@ -7,7 +7,7 @@ func _process(delta: float) -> void:
 
 
 func _on_body_entered(body: Node2D) -> void:
-	if body is StaticEnemy || body is CharEnemy:
+	if body is CharEnemy:
 		body.damage(25)
 
 

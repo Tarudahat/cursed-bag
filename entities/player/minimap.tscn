@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dhijonbin4m85"]
 
 [ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="1_isuc0"]
-[ext_resource type="Script" uid="uid://c1c6w7ds0v78f" path="res://entities/minimap.gd" id="2_mvkcf"]
+[ext_resource type="Script" path="res://entities/player/minimap.gd" id="2_mvkcf"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_mvkcf"]
 texture = ExtResource("1_isuc0")

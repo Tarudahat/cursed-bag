@@ -1,0 +1,55 @@
+[gd_scene format=3 uid="uid://c5ucsyfmpctpw"]
+
+[ext_resource type="Script" uid="uid://cel017dqhucof" path="res://entities/enemies/bomb_buddy.gd" id="1_yymek"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="2_5t517"]
+[ext_resource type="Texture2D" uid="uid://ce24ixxxy7vnx" path="res://assets/player/shadow.png" id="3_ltmuc"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_5t517"]
+radius = 350.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ltmuc"]
+radius = 716.13684
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_k6wks"]
+radius = 60.530983
+
+[node name="CharEnemy" type="CharacterBody2D" unique_id=1561862249]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_yymek")
+metadata/_custom_type_script = "uid://dhalpxunvn8ux"
+
+[node name="shadow" type="Sprite2D" parent="." unique_id=955056791]
+modulate = Color(1, 1, 1, 0.6509804)
+self_modulate = Color(1, 1, 1, 0.69803923)
+position = Vector2(0, 59.000004)
+scale = Vector2(0.7, 0.7)
+texture = ExtResource("3_ltmuc")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1778250429]
+texture = ExtResource("2_5t517")
+
+[node name="JumpRangeArea" type="Area2D" parent="." unique_id=1460871859]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="JumpRangeArea" unique_id=442574374]
+shape = SubResource("CircleShape2D_5t517")
+
+[node name="ChargeRangeArea" type="Area2D" parent="." unique_id=2111415353]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ChargeRangeArea" unique_id=1077507555]
+shape = SubResource("CircleShape2D_ltmuc")
+
+[node name="WanderCooldown" type="Timer" parent="." unique_id=929690971]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=697919199]
+shape = SubResource("CircleShape2D_k6wks")
+
+[connection signal="body_entered" from="JumpRangeArea" to="." method="_on_jump_range_area_body_entered"]
+[connection signal="body_exited" from="JumpRangeArea" to="." method="_on_jump_range_area_body_exited"]
+[connection signal="body_entered" from="ChargeRangeArea" to="." method="_on_charge_range_area_body_entered"]
+[connection signal="body_exited" from="ChargeRangeArea" to="." method="_on_charge_range_area_body_exited"]
+[connection signal="timeout" from="WanderCooldown" to="." method="_on_wander_cooldown_timeout"]

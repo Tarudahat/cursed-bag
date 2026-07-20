@@ -1,6 +1,6 @@
 [gd_scene format=3 uid="uid://bbxswwnqomvju"]
 
-[ext_resource type="Script" uid="uid://buic4p2qdh6ry" path="res://entities/player.gd" id="1_b0kkn"]
+[ext_resource type="Script" uid="uid://cj0qlcmj5lov7" path="res://entities/player/player.gd" id="1_26q78"]
 [ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="1_e4p34"]
 [ext_resource type="Texture2D" uid="uid://crbo5an430kmp" path="res://assets/player/sword.png" id="2_rfe5m"]
 [ext_resource type="Texture2D" uid="uid://3kyr4gu143lh" path="res://assets/player/shield.png" id="3_q0i8f"]
@@ -9,13 +9,13 @@
 [ext_resource type="Texture2D" uid="uid://uv076jj83h6j" path="res://assets/player/hero_front.png" id="12_q0i8f"]
 [ext_resource type="Texture2D" uid="uid://dran0t055o5hr" path="res://assets/player/hero_l.png" id="13_0i614"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_b0kkn"]
+radius = 56.0
+
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_b0kkn"]
 size = Vector2(26.541565, 20)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_e4p34"]
-
-[sub_resource type="CircleShape2D" id="CircleShape2D_b0kkn"]
-radius = 56.0
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_e4p34"]
 shader = ExtResource("1_e4p34")
@@ -82,17 +82,33 @@ animations = [{
 "speed": 5.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_e4p34"]
-radius = 63.007935
-
-[node name="Player" type="CharacterBody2D" unique_id=514587461]
+[node name="Player" type="CharacterBody2D" unique_id=1507622502]
 z_index = 1
-collision_layer = 35
-collision_mask = 7
-script = ExtResource("1_b0kkn")
+collision_layer = 22
+collision_mask = 23
+platform_on_leave = 2
+script = ExtResource("1_26q78")
+hp = 250
+knockback_strength = 4000.0
+should_free_on_fall_hole = false
+auto_free_on_death = false
+metadata/_custom_type_script = "uid://begn1lkahd4y4"
+
+[node name="terrain_hitbox" type="CollisionShape2D" parent="." unique_id=1387891109]
+position = Vector2(0, 28)
+shape = SubResource("CircleShape2D_b0kkn")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=1318522249]
+zoom = Vector2(0.676, 0.676)
+process_callback = 0
+position_smoothing_speed = 100.0
+
+[node name="AudioListener2D" type="AudioListener2D" parent="." unique_id=377737936]
 
 [node name="Sword" type="Area2D" parent="." unique_id=1763883276]
 scale = Vector2(0.7419884, 0.7419884)
+collision_layer = 0
+collision_mask = 6
 
 [node name="Sprite2D" type="Sprite2D" parent="Sword" unique_id=1030752979]
 position = Vector2(258.76413, 0)
@@ -119,15 +135,6 @@ position = Vector2(-123, 0)
 scale = Vector2(2.1150022, 10.224407)
 shape = SubResource("RectangleShape2D_e4p34")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=1318522249]
-zoom = Vector2(0.676, 0.676)
-process_callback = 0
-position_smoothing_speed = 100.0
-
-[node name="terrain_hitbox" type="CollisionShape2D" parent="." unique_id=1387891109]
-position = Vector2(0, 31)
-shape = SubResource("CircleShape2D_b0kkn")
-
 [node name="shadow" type="Sprite2D" parent="." unique_id=1672233243]
 modulate = Color(1, 1, 1, 0.37254903)
 z_index = -1
@@ -140,8 +147,7 @@ material = SubResource("ShaderMaterial_e4p34")
 position = Vector2(0, -24)
 scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("SpriteFrames_cicqb")
-animation = &"back"
-frame_progress = 0.9144135
+animation = &"front"
 speed_scale = 0.6
 
 [node name="blast_timer" type="Timer" parent="." unique_id=1777022212]
@@ -153,24 +159,10 @@ autostart = true
 wait_time = 0.05
 one_shot = true
 
-[node name="atk_hitbox" type="Area2D" parent="." unique_id=1331654378]
-position = Vector2(0, -1)
-collision_layer = 11
-collision_mask = 11
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="atk_hitbox" unique_id=1847033638]
-shape = SubResource("CircleShape2D_e4p34")
-
-[node name="dmg_timer" type="Timer" parent="." unique_id=1815395632]
-wait_time = 1.4
-
-[node name="AudioListener2D" type="AudioListener2D" parent="." unique_id=377737936]
-current = true
-
+[connection signal="died" from="." to="." method="_on_died"]
+[connection signal="fell_into_hole" from="." to="." method="_on_fell_into_hole"]
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
 [connection signal="body_entered" from="Sword" to="." method="_on_sword_body_entered"]
 [connection signal="timeout" from="blast_timer" to="." method="_on_blast_timer_timeout"]
 [connection signal="timeout" from="atk_timer" to="." method="_on_atk_timer_timeout"]
-[connection signal="area_entered" from="atk_hitbox" to="." method="_on_atk_hitbox_area_entered"]
-[connection signal="body_entered" from="atk_hitbox" to="." method="_on_atk_hitbox_body_entered"]
-[connection signal="body_exited" from="atk_hitbox" to="." method="_on_atk_hitbox_body_exited"]
-[connection signal="timeout" from="dmg_timer" to="." method="_on_dmg_timer_timeout"]

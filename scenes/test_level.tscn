@@ -1,10 +1,11 @@
 [gd_scene format=4 uid="uid://pfxsvmyfwab"]
 
-[ext_resource type="PackedScene" uid="uid://bbxswwnqomvju" path="res://entities/player.tscn" id="2_paw1w"]
+[ext_resource type="PackedScene" uid="uid://bbxswwnqomvju" path="res://entities/player/player.tscn" id="2_paw1w"]
 [ext_resource type="PackedScene" uid="uid://buqm6b654jm4n" path="res://scenes/locked_door.tscn" id="4_x4b8f"]
-[ext_resource type="PackedScene" uid="uid://qlwdj7aoxlnp" path="res://entities/key.tscn" id="5_qcd3b"]
+[ext_resource type="PackedScene" uid="uid://dd5gonmexr0do" path="res://entities/misc/key.tscn" id="5_qcd3b"]
 [ext_resource type="PackedScene" uid="uid://h08clliflel3" path="res://entities/enemies/enemy_spawn_area.tscn" id="5_tmr53"]
-[ext_resource type="Texture2D" uid="uid://dfc015rftf2mr" path="res://assets/tileset/tiles.png" id="6_88ety"]
+[ext_resource type="Texture2D" uid="uid://ckic6ao60g2si" path="res://assets/tileset/tiles.png" id="6_88ety"]
+[ext_resource type="PackedScene" uid="uid://bluflnt46fryf" path="res://scenes/next_lvl.tscn" id="6_qcd3b"]
 
 [sub_resource type="PhysicsMaterial" id="PhysicsMaterial_w7c3h"]
 resource_local_to_scene = true
@@ -82,4 +83,7 @@ position = Vector2(7480, -512)
 direction = Vector2(1, 0)
 
 [node name="EnemySpawnArea" parent="." unique_id=2085006813 instance=ExtResource("5_tmr53")]
-position = Vector2(1080, -912)
+position = Vector2(7112, -884)
+
+[node name="Area2D" parent="." unique_id=496307312 instance=ExtResource("6_qcd3b")]
+position = Vector2(7200, -768)

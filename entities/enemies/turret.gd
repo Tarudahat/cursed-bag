@@ -1,4 +1,4 @@
-extends StaticEnemy
+extends CharEnemy
 
 var bullet_node = preload("res://entities/enemies/bullet.tscn")
 
@@ -11,8 +11,7 @@ func _ready():
 	super()
 	$Sprite2D.material.set_shader_parameter("enabled", false)
 
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	if can_shoot && can_shoot_wave:
 		var ang = 0
 		if wave % 2 == 0:
@@ -20,18 +19,20 @@ func _process(delta: float) -> void:
 		for i in range(8):
 			var blast = bullet_node.instantiate()
 			blast.direction = Vector2(cos(ang), sin(ang))
-			blast.position = position + blast.direction*10
+			blast.position = position + blast.direction * 10
 			get_parent().add_child(blast)
 			ang += PI / 4
 			
 		$shoot_wave_cooldown.start()
 		can_shoot_wave = false
-		wave += 1 
+		wave += 1
 		if wave == wave_count:
 			can_shoot = false
 			$shoot_pattern_cooldown.start()
 			wave = 0
 
+	velocity = Vector2.ZERO
+	char_entity_move_and_slide()
 
 func _on_shoot_pattern_cooldown_timeout() -> void:
 	can_shoot = true
@@ -39,9 +40,8 @@ func _on_shoot_pattern_cooldown_timeout() -> void:
 func _on_shoot_wave_cooldown_timeout() -> void:
 	can_shoot_wave = true
 	
-func _on_got_hit(hp, val) -> void:
+func _on_got_hit(_hp, _val) -> void:
 	$Sprite2D.material.set_shader_parameter("enabled", true)
 
 func _on_inv_end() -> void:
 	$Sprite2D.material.set_shader_parameter("enabled", false)
-	

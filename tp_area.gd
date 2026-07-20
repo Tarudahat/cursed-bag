@@ -13,3 +13,4 @@ func _on_body_entered(body: Node2D) -> void:
 		body.should_change_screen_target = true
 		body.moved_room = true
 		body.global_position += dir * dist
+		body.room_respawn_point = body.global_position

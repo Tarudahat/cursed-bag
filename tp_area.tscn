@@ -7,7 +7,7 @@ size = Vector2(19.523335, 20)
 
 [node name="tp_area" type="Area2D" unique_id=1961416228]
 collision_layer = 0
-collision_mask = 32
+collision_mask = 16
 script = ExtResource("1_p7oi2")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=484054480]

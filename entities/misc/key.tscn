@@ -1,6 +1,6 @@
-[gd_scene format=3 uid="uid://qlwdj7aoxlnp"]
+[gd_scene format=3 uid="uid://dd5gonmexr0do"]
 
-[ext_resource type="Script" uid="uid://db5cwbdjdqyqu" path="res://entities/key.gd" id="1_2nk70"]
+[ext_resource type="Script" path="res://entities/misc/key.gd" id="1_2nk70"]
 [ext_resource type="Texture2D" uid="uid://budmakqegmnjh" path="res://assets/items/key.png" id="1_lwijo"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_lwijo"]
