@@ -48,7 +48,7 @@ func _physics_process(delta: float) -> void:
 			collider.damage(5)
 
 
-func _on_got_hit(hp, val) -> void:
+func _on_got_hit(hp) -> void:
 	$Sprite2D.material.set_shader_parameter("enabled", true)
 
 func _on_inv_end() -> void:

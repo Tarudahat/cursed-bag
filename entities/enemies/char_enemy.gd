@@ -18,7 +18,7 @@ func damage(amount: int) -> void:
 		can_get_hit = false
 		dmg_timer.start()
 		hp -= amount
-		emit_signal("got_hit", hp, value)
+		emit_signal("got_hit", hp)
 		
 		if hp <= 0:
 			emit_signal("died")

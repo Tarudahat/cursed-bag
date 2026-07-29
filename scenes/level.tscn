@@ -3,7 +3,7 @@
 [ext_resource type="Script" uid="uid://baujxkr2w7d6l" path="res://scenes/level.gd" id="1_w8frs"]
 [ext_resource type="PackedScene" uid="uid://bbxswwnqomvju" path="res://entities/player/player.tscn" id="2_w7c3h"]
 [ext_resource type="TileSet" uid="uid://wa21kcibak8v" path="res://assets/tileset/map_tiles.tres" id="2_w8frs"]
-[ext_resource type="PackedScene" uid="uid://c5ucsyfmpctpw" path="res://entities/enemies/bomb_buddy.tscn" id="4_mx8sn"]
+[ext_resource type="PackedScene" uid="uid://32lan7565y4f" path="res://entities/enemies/artillery.tscn" id="4_mx8sn"]
 
 [node name="level" type="Node2D" unique_id=2035455020]
 script = ExtResource("1_w8frs")
@@ -17,19 +17,10 @@ tile_set = ExtResource("2_w8frs")
 [node name="Player" parent="." unique_id=514587461 instance=ExtResource("2_w7c3h")]
 position = Vector2(1420, 888)
 
-[node name="CharEnemy" parent="." unique_id=1561862249 instance=ExtResource("4_mx8sn")]
-position = Vector2(720, 441)
+[node name="Artillery" parent="." unique_id=1711594550 instance=ExtResource("4_mx8sn")]
+position = Vector2(517, 573)
 
-[node name="CharEnemy2" parent="." unique_id=939334823 instance=ExtResource("4_mx8sn")]
-position = Vector2(1928, 441)
-
-[node name="CharEnemy3" parent="." unique_id=1286789289 instance=ExtResource("4_mx8sn")]
-position = Vector2(2369, 1065)
-
-[node name="CharEnemy4" parent="." unique_id=1465688858 instance=ExtResource("4_mx8sn")]
-position = Vector2(784, 1129)
-
-[node name="CharEnemy5" parent="." unique_id=399106934 instance=ExtResource("4_mx8sn")]
-position = Vector2(1520, 1193)
+[node name="Artillery3" parent="." unique_id=44888217 instance=ExtResource("4_mx8sn")]
+position = Vector2(2177, 1540)
 
 [connection signal="ready" from="Player" to="." method="_on_player_ready"]

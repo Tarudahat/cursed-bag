@@ -15,6 +15,7 @@ var max_hp = hp
 @export var should_free_on_fall_hole: bool = true
 @export var auto_free_on_death: bool = true
 @export var can_knockback_during_inv: bool = false
+@export var blast_resistant: bool = false
 
 @export var inv_duration: float = 1.0
 @export var status_durations: Dictionary[StatusEffect, float]
@@ -116,7 +117,7 @@ func apply_status_effect(status_effect: StatusEffect, duration: float = status_d
 		if default_status_effect_behaviours:
 			match status_effect:
 				StatusEffect.SLOW:
-					speed_multiply = 0.4
+					speed_multiply = 0.3
 				StatusEffect.TINY:
 					scale = default_scale * 0.65
 				StatusEffect.STUN:

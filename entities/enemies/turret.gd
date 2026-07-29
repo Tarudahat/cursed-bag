@@ -40,7 +40,7 @@ func _on_shoot_pattern_cooldown_timeout() -> void:
 func _on_shoot_wave_cooldown_timeout() -> void:
 	can_shoot_wave = true
 	
-func _on_got_hit(_hp, _val) -> void:
+func _on_got_hit(_hp) -> void:
 	$Sprite2D.material.set_shader_parameter("enabled", true)
 
 func _on_inv_end() -> void:

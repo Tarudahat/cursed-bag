@@ -1,7 +1,7 @@
 extends Node
 
 var current_level = 0
-var level_room_count = [5, 7, 12, 15, 25]
+var level_room_count = [3, 7, 12, 15, 25]
 var lvl = preload("res://scenes/level.tscn")
 var gmov = preload("res://scenes/gameover.tscn")
 var tit = preload("res://scenes/titlescreen.tscn")
@@ -14,6 +14,7 @@ var curse_cap = -1
 var minimap = null
 var player_node = null
 var level_node = null
+var player_ui = null
 var boss = null
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -33,7 +34,7 @@ func bezier_curve(start: Vector2, mid: Vector2, end: Vector2, t_lerp: float) -> 
 
 func next_level():
 	boss = null
-	minimap = null
+	#minimap = null
 	player_node = null
 	level_node = null
 
@@ -54,6 +55,8 @@ func next_level():
 
 
 func game_over():
+	if player_ui != null:
+		player_ui.queue_free()
 	Sounds.music.stop()
 	perm_shield = false
 	# get the parent of level
@@ -67,6 +70,8 @@ func title_screen():
 	get_tree().get_root().add_child.call_deferred(tit.instantiate())
 	
 func win_screen():
+	if player_ui != null:
+		player_ui.queue_free()
 	perm_shield = false
 	# get the parent of level
 	var levelll = null

@@ -12,5 +12,10 @@ script = ExtResource("1_b7mno")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1312965474]
 shape = SubResource("RectangleShape2D_o6fhh")
 
+[node name="ActivationTimer" type="Timer" parent="." unique_id=2069820598]
+wait_time = 0.7
+one_shot = true
+
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="body_exited" from="." to="." method="_on_body_exited"]
+[connection signal="timeout" from="ActivationTimer" to="." method="_on_activation_timer_timeout"]

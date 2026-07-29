@@ -16,6 +16,6 @@ func _on_animation_player_animation_finished(anim_name: StringName) -> void:
 	should_free = true
 
 func _on_body_entered(body: Node2D) -> void:
-	if body is CharEntity:
+	if body is CharEntity && !body.blast_resistant:
 		body.knockback(global_position.direction_to(body.global_position) * knockback_strength)
 		body.damage(dmg)

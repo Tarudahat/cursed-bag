@@ -35,7 +35,7 @@ func _physics_process(_delta: float) -> void:
 func _on_movement_timer_timeout() -> void:
 	moving_to_target = false
 
-func _on_got_hit(_hp, _val) -> void:
+func _on_got_hit(_hp) -> void:
 	$AnimatedSprite2D.material.set_shader_parameter("enabled", true)
 
 func _on_inv_end() -> void:

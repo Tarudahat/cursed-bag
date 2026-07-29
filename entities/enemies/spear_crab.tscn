@@ -2,6 +2,13 @@
 
 [ext_resource type="Script" uid="uid://b2hletfj1ht6a" path="res://entities/enemies/spear_crab.gd" id="1_jy7ln"]
 [ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="2_axs1w"]
+[ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="2_qeh8f"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_l0qf8"]
+resource_local_to_scene = true
+shader = ExtResource("2_qeh8f")
+shader_parameter/enabled = false
+shader_parameter/speed = 10.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_axs1w"]
 radius = 50.0
@@ -17,12 +24,13 @@ collision_layer = 4
 collision_mask = 7
 platform_on_leave = 2
 script = ExtResource("1_jy7ln")
-hp = 20
+hp = 25
 metadata/_custom_type_script = "uid://dhalpxunvn8ux"
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1152901304]
 modulate = Color(1, 0.23137255, 0.21568628, 1)
 light_mask = 0
+material = SubResource("ShaderMaterial_l0qf8")
 texture = ExtResource("2_axs1w")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=367250796]
@@ -50,6 +58,8 @@ autostart = true
 wait_time = 3.0
 autostart = true
 
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
 [connection signal="body_entered" from="ranged_area" to="." method="_on_ranged_area_body_entered"]
 [connection signal="body_exited" from="ranged_area" to="." method="_on_ranged_area_body_exited"]
 [connection signal="body_entered" from="close_area" to="." method="_on_close_area_body_entered"]

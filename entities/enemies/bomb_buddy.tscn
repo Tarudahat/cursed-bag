@@ -2,7 +2,14 @@
 
 [ext_resource type="Script" uid="uid://cel017dqhucof" path="res://entities/enemies/bomb_buddy.gd" id="1_yymek"]
 [ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="2_5t517"]
+[ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="3_k6wks"]
 [ext_resource type="Texture2D" uid="uid://ce24ixxxy7vnx" path="res://assets/player/shadow.png" id="3_ltmuc"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_phouk"]
+resource_local_to_scene = true
+shader = ExtResource("3_k6wks")
+shader_parameter/enabled = false
+shader_parameter/speed = 10.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_5t517"]
 radius = 350.0
@@ -27,6 +34,7 @@ scale = Vector2(0.7, 0.7)
 texture = ExtResource("3_ltmuc")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1778250429]
+material = SubResource("ShaderMaterial_phouk")
 texture = ExtResource("2_5t517")
 
 [node name="JumpRangeArea" type="Area2D" parent="." unique_id=1460871859]
@@ -48,6 +56,8 @@ shape = SubResource("CircleShape2D_ltmuc")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=697919199]
 shape = SubResource("CircleShape2D_k6wks")
 
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
 [connection signal="body_entered" from="JumpRangeArea" to="." method="_on_jump_range_area_body_entered"]
 [connection signal="body_exited" from="JumpRangeArea" to="." method="_on_jump_range_area_body_exited"]
 [connection signal="body_entered" from="ChargeRangeArea" to="." method="_on_charge_range_area_body_entered"]

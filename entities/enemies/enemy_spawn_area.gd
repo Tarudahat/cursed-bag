@@ -4,17 +4,23 @@ class_name EnemySpawnArea
 static var enemy_resources: Dictionary
 const enemy_resource_blacklist: PackedStringArray = ["bullet.tscn", "char_enemy.tscn", "enemy_spawn_area.gd", "static_enemy.tscn"]
 
+var door_rsrc = preload("res://entities/terrain/enemy_door.tscn")
+
 static var GROUP_PREFIX: String = "group_area_"
 var group_id: int
 
 static var group_member_count: int = 0
 var group_member_idx: int
-var group_state_array: PackedByteArray
-var group_cam_limits: PackedVector2Array
+
+var group_shared_state: Dictionary
 
 var should_spawn_enemies: bool = false
 var spawned_enemies: bool = false
 var owned_enemies = []
+
+var is_enemy_challenge_room: bool = false
+var doors_cleared: bool = false
+var door_instances: Array
 
 func _ready() -> void:
 	# assign group member idx
@@ -28,28 +34,26 @@ func _ready() -> void:
 				enemy_resources[res.get_basename()] = load("res://entities/enemies" + "/" + res)
 			
 	# set cam boundaries for group
-	var min_vec: Vector2 = group_cam_limits[0]
-	var max_vec: Vector2 = group_cam_limits[1]
+	var min_vec: Vector2 = group_shared_state["cam_limits"][0]
+	var max_vec: Vector2 = group_shared_state["cam_limits"][1]
 
 	var collision_shape_extent = $CollisionShape2D.shape.size / 2
 	min_vec = Vector2(min(min_vec.x, position.x - collision_shape_extent.x), min(min_vec.y, position.y - collision_shape_extent.y))
-	group_cam_limits[0] = min_vec
+	group_shared_state["cam_limits"][0] = min_vec
 	
 	max_vec = Vector2(max(max_vec.x, position.x + collision_shape_extent.x), max(max_vec.y, position.y + collision_shape_extent.y))
-	group_cam_limits[1] = max_vec
+	group_shared_state["cam_limits"][1] = max_vec
 
 	group_member_count += 1
 
 func activate_or_spawn_enemies():
 	if spawned_enemies:
-		for enemy in owned_enemies:
-			if enemy != null:
-				enemy.set_process(true)
-				enemy.set_physics_process(true)
+		$ActivationTimer.start()
 	else:
 		should_spawn_enemies = true
 
 func deactivate_enemies():
+	$ActivationTimer.stop()
 	for enemy in owned_enemies:
 		if enemy != null:
 			enemy.set_process(false)
@@ -57,7 +61,7 @@ func deactivate_enemies():
 
 func _on_body_entered(body: Node2D) -> void:
 	if body is Player:
-		group_state_array[group_member_idx] = 1
+		group_shared_state["player_inside"][group_member_idx] = 1
 		get_tree().call_group(GROUP_PREFIX + str(group_id), "activate_or_spawn_enemies")
 
 		# set camera vars for screen change
@@ -66,19 +70,29 @@ func _on_body_entered(body: Node2D) -> void:
 			body.get_node("Camera2D").global_position = body.get_node("Camera2D").get_screen_center_position()
 			body.screen_change_cam_target_set = true
 			
-		body.group_cam_limits = group_cam_limits
+		body.group_cam_limits = group_shared_state["cam_limits"]
 		
 func _on_body_exited(body: Node2D) -> void:
 	if body is Player:
-		group_state_array[group_member_idx] = 0
-		if group_state_array.count(1) == 0: # player left all of them safe to deactivate
+		group_shared_state["player_inside"][group_member_idx] = 0
+		if group_shared_state["player_inside"].count(1) == 0: # player left all of them safe to deactivate
 			get_tree().call_group(GROUP_PREFIX + str(group_id), "deactivate_enemies")
 		
 func _process(_delta: float) -> void:
+	if spawned_enemies && is_enemy_challenge_room && !doors_cleared:
+		group_shared_state["all_enemies_defeated"][group_member_idx] = int(owned_enemies.is_empty() || !owned_enemies.any(func(enemy): return is_instance_valid(enemy)))
+		if group_shared_state["all_enemies_defeated"].count(0) == 0:
+			clear_enemy_doors()
+
 	if should_spawn_enemies:
 		spawn_enemies()
+		deactivate_enemies()
+		$ActivationTimer.start()
 		should_spawn_enemies = false
 		spawned_enemies = true
+
+		if is_enemy_challenge_room && Globals.level_node:
+			spawn_enemy_doors()
 
 func spawn_enemies():
 	var enemy = null
@@ -128,3 +142,24 @@ func spawn_enemies():
 		owned_enemies.append(enemy)
 		if choice == 2:
 			enemy.position = position + rnd_pos_offset
+
+func spawn_enemy_doors() -> void:
+	for door_data in Globals.level_node.room_door_data[group_id]:
+				var door_pos = door_data[0]
+				var door_inst = door_rsrc.instantiate()
+
+				door_instances.append(door_inst)
+				door_inst.global_position = door_pos
+				get_parent().add_child(door_inst)
+
+func clear_enemy_doors() -> void:
+	for door in door_instances:
+		if door:
+			door.queue_free()
+	doors_cleared = true
+
+func _on_activation_timer_timeout() -> void:
+	for enemy in owned_enemies:
+		if enemy != null:
+			enemy.set_process(true)
+			enemy.set_physics_process(true)

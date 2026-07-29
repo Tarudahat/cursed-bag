@@ -101,3 +101,10 @@ func _on_charge_range_area_body_exited(body: Node2D) -> void:
 
 func _on_wander_cooldown_timeout() -> void:
 	can_wander = false
+
+
+func _on_got_hit(hp: Variant) -> void:
+	$Sprite2D.material.set_shader_parameter("enabled", true)
+
+func _on_inv_end() -> void:
+	$Sprite2D.material.set_shader_parameter("enabled", false)

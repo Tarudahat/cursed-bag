@@ -1,0 +1,56 @@
+[gd_scene format=3 uid="uid://32lan7565y4f"]
+
+[ext_resource type="Script" uid="uid://qpexwy1psc7u" path="res://entities/enemies/artillery.gd" id="1_xttb5"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="2_wamip"]
+[ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="2_yw7j0"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_1n7a5"]
+resource_local_to_scene = true
+shader = ExtResource("2_yw7j0")
+shader_parameter/enabled = false
+shader_parameter/speed = 10.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xttb5"]
+size = Vector2(28.961424, 33.099266)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_wamip"]
+radius = 1120.7141
+
+[node name="Artillery" type="CharacterBody2D" unique_id=1711594550]
+collision_layer = 4
+collision_mask = 4
+script = ExtResource("1_xttb5")
+hp = 35
+blast_resistant = true
+metadata/_custom_type_script = "uid://dhalpxunvn8ux"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=39942832]
+material = SubResource("ShaderMaterial_1n7a5")
+position = Vector2(0, -28)
+scale = Vector2(0.7200007, 1.4375)
+texture = ExtResource("2_wamip")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1525911932]
+position = Vector2(1.7311764, -26.799927)
+scale = Vector2(3.2240522, 5.4865217)
+shape = SubResource("RectangleShape2D_xttb5")
+
+[node name="Area2D" type="Area2D" parent="." unique_id=363681755]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1470170586]
+shape = SubResource("CircleShape2D_wamip")
+
+[node name="ShotCD" type="Timer" parent="." unique_id=1951504441]
+wait_time = 0.75
+
+[node name="CycleCD" type="Timer" parent="." unique_id=1603309637]
+wait_time = 10.0
+
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="timeout" from="ShotCD" to="." method="_on_shot_cd_timeout"]
+[connection signal="timeout" from="CycleCD" to="." method="_on_cycle_cd_timeout"]

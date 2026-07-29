@@ -54,8 +54,10 @@ var cam_is_moving: bool = false
 
 func _ready() -> void:
 	Globals.player_node = self
-	var player_ui = player_ui_rsrc.instantiate()
-	get_parent().get_parent().add_child.call_deferred(player_ui)
+	if Globals.player_ui == null:
+		var player_ui = player_ui_rsrc.instantiate()
+		get_parent().get_parent().add_child.call_deferred(player_ui)
+		Globals.player_ui = player_ui
 	
 	super()
 	
@@ -171,8 +173,8 @@ func _physics_process(delta: float) -> void:
 
 		if screen_change_cam_target_set:
 			$Camera2D.limit_enabled = !should_change_screen_target
-			$Camera2D.global_position.x = move_toward($Camera2D.global_position.x, screen_change_cam_target.x, CAM_SCRN_CHANGE_SPEED * speed_multiply * delta)
-			$Camera2D.global_position.y = move_toward($Camera2D.global_position.y, screen_change_cam_target.y, CAM_SCRN_CHANGE_SPEED * speed_multiply * delta * 10 / 16)
+			$Camera2D.global_position.x = move_toward($Camera2D.global_position.x, screen_change_cam_target.x, CAM_SCRN_CHANGE_SPEED * delta)
+			$Camera2D.global_position.y = move_toward($Camera2D.global_position.y, screen_change_cam_target.y, CAM_SCRN_CHANGE_SPEED * delta * 10 / 16)
 			
 			if screen_change_cam_target.is_equal_approx($Camera2D.global_position):
 				should_change_screen_target = false
@@ -183,7 +185,8 @@ func _physics_process(delta: float) -> void:
 		$Camera2D.global_position.x = move_toward($Camera2D.global_position.x, cam_target.x, CAM_SPEED * speed_multiply * delta)
 		$Camera2D.global_position.y = move_toward($Camera2D.global_position.y, cam_target.y, CAM_SPEED * speed_multiply * delta)
 		
-	var target_look_coord = get_local_mouse_position()
+	var target_look_coord = get_local_mouse_position() # around player
+	# get_global_mouse_position() - $Camera2D.get_screen_center_position() # around screen center
 	
 	# sword anime
 	if !attacking:
@@ -278,3 +281,7 @@ func _on_fell_into_hole() -> void:
 	scale = default_scale
 	global_position = room_respawn_point
 	falling_into_hole = false
+	
+	$Camera2D.global_position = $Camera2D.get_screen_center_position()
+	should_change_screen_target = true
+	screen_change_cam_target_set = true

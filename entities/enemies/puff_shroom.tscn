@@ -1,0 +1,46 @@
+[gd_scene format=3 uid="uid://i4ibyp433pg8"]
+
+[ext_resource type="Script" uid="uid://msqm1xahr3k6" path="res://entities/enemies/puff_shroom.gd" id="1_3jr3u"]
+[ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="2_k8pto"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="2_lsmok"]
+[ext_resource type="PackedScene" uid="uid://buv32uo2em7hd" path="res://entities/misc/status_effect_cloud.tscn" id="3_3jr3u"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_k8pto"]
+radius = 69.02898
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ved2b"]
+shader = ExtResource("2_k8pto")
+shader_parameter/enabled = false
+shader_parameter/speed = 10.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_3jr3u"]
+radius = 392.2499
+
+[node name="PuffShroom" type="CharacterBody2D" unique_id=244676389]
+collision_layer = 4
+collision_mask = 7
+script = ExtResource("1_3jr3u")
+hp = 25
+metadata/_custom_type_script = "uid://dhalpxunvn8ux"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=921822449]
+shape = SubResource("CircleShape2D_k8pto")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1838650686]
+modulate = Color(0.42745098, 1, 0.38039216, 1)
+material = SubResource("ShaderMaterial_ved2b")
+texture = ExtResource("2_lsmok")
+
+[node name="Agro" type="Area2D" parent="." unique_id=2010393232]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Agro" unique_id=958474173]
+shape = SubResource("CircleShape2D_3jr3u")
+
+[node name="StatusEffectCloud" parent="." unique_id=1516955722 instance=ExtResource("3_3jr3u")]
+
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]
+[connection signal="body_entered" from="Agro" to="." method="_on_agro_body_entered"]
+[connection signal="body_exited" from="Agro" to="." method="_on_agro_body_exited"]

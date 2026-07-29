@@ -114,3 +114,11 @@ func _on_atk_cooldown_timeout() -> void:
 
 func _on_jab_cooldown_timeout() -> void:
 	can_jab = true
+
+
+func _on_got_hit(hp: Variant) -> void:
+	$Sprite2D.material.set_shader_parameter("enabled", true)
+
+
+func _on_inv_end() -> void:
+	$Sprite2D.material.set_shader_parameter("enabled", false)

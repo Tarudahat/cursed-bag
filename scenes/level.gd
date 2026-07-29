@@ -7,6 +7,7 @@ class_name Level
 @export var constructions_count := 1
 @export var hole_gen_rate := 50
 @export var pot_gen_rate := 100
+@export var challenge_room_rate := 8
 @export var max_pot_count := 10
 @export var minimum_rooms_before_lock_count := 6
 
@@ -28,7 +29,10 @@ var constructions_buf := []
 
 var doors_buf := []
 var door_placement_buf: Array[Array] = []
+var room_door_data: Array[Array] = []
 var room_pos_tiles: Array[Vector4i] = []
+enum DoorType {Open, Locked, Enemy, Puzzle, Hidden}
+
 
 var map := Array()
 var min_coord := Vector2i.MAX
@@ -76,13 +80,15 @@ func get_room_merge_state(v4: Vector4i) -> int:
 func get_room_biome(v4: Vector4i) -> int:
 	return v4.w
 
-func place_door(pos: Vector2i, dir: Vector2, tilemap: TileMapLayer = $tilemap):
+func place_door(pos: Vector2i, dir: Vector2, tilemap: TileMapLayer = $tilemap, door_state: DoorType = DoorType.Open):
 	var door_pos = tilemap.map_to_local(pos) * 0.5
 	var door_dis = 475
 	
 	var tp = tp_area.instantiate()
 	var tp2 = tp_area.instantiate()
 	
+	# pos -> room tile y, x 
+
 	if dir == Vector2.UP:
 		paste_tile_region(pos, doors_buf[2])
 		paste_tile_region(pos + Vector2i.UP * 3, doors_buf[3])
@@ -114,6 +120,16 @@ func place_door(pos: Vector2i, dir: Vector2, tilemap: TileMapLayer = $tilemap):
 	tp.position = door_pos
 	tp2.dir = dir * -1
 	tp2.position = door_pos + dir * door_dis
+
+	# calc room x, y, entrance, exit
+	var door_exit_coord = global_to_room(tp.position)
+	var door_entrance_coord = global_to_room(tp2.position)
+	var exit_room = map[door_exit_coord.y][door_exit_coord.x]
+	var entrance_room = map[door_entrance_coord.y][door_entrance_coord.x]
+
+	if exit_room != null:
+		room_door_data[exit_room.z].append([tp.position, dir, door_state])
+		room_door_data[entrance_room.z].append([tp2.position, -1 * dir, door_state])
 
 	add_child(tp)
 	add_child(tp2)
@@ -277,7 +293,7 @@ func gen_map_layout():
 		var coord = get_room_pos(room)
 		coord /= room_size
 		coord -= min_coord
-		map[coord.y][coord.x] = Vector2i(0, get_room_biome(room))
+		map[coord.y][coord.x] = Vector3i(0, get_room_biome(room), -1)
 		
 
 	var exit_node = exit.instantiate()
@@ -300,21 +316,54 @@ func can_fuse(pos: Vector2i, pattern_id: int):
 func fuse(pos: Vector2i, pattern_id: int):
 	var fused_area_state_array: PackedByteArray
 	var group_cam_limits: PackedVector2Array = [Vector2(INF, INF), Vector2(-1 * INF, -1 * INF)]
+	var group_all_enemies_defeated: PackedByteArray
+
 	fused_area_state_array.resize(merge_patterns[pattern_id].size())
+	group_all_enemies_defeated.resize(merge_patterns[pattern_id].size())
+	
 	EnemySpawnArea.group_member_count = 0
 	
+	var is_challenge_room: bool = randi_range(0, 100) >= 100 - challenge_room_rate
+
 	for comp in merge_patterns[pattern_id]:
 		var room_pos = pos + Vector2i(comp.x, comp.y)
 		var tile = map[room_pos.y][room_pos.x]
 		
 		# fuse spawn areas by adding to the same group
 		var spawn_enemies = !(room_pos + min_coord == Vector2i.ZERO)
-		place_enemy_spawner((room_pos + min_coord) * room_size, fused_rooms_count, fused_area_state_array, group_cam_limits, spawn_enemies)
+		place_enemy_spawner({
+			"room_pos": (room_pos + min_coord) * room_size,
+			"group_state_array": fused_area_state_array,
+		  	"group_cam_limits": group_cam_limits,
+			"spawn_enemies": spawn_enemies,
+		  	"group_all_enemies_defeated": group_all_enemies_defeated,
+		  	"is_enemy_challenge_room": is_challenge_room})
 		
 		if tile != null:
 			map[room_pos.y][room_pos.x].x = pattern_id
+			map[room_pos.y][room_pos.x].z = fused_rooms_count
 			paste_tile_region((room_pos + min_coord) * room_size, walls_buf[comp.z])
+	room_door_data.append([])
 	fused_rooms_count += 1
+
+
+func place_enemy_spawner(args: Dictionary):
+	var room_center = $tilemap.map_to_local(args["room_pos"] + room_size / 2) / 2 - Vector2(355, 355) / 4
+	var spawner = enemy_spawner.instantiate()
+	spawner.position = room_center
+	spawner.group_id = fused_rooms_count
+	
+	spawner.group_shared_state = \
+		{
+		 "player_inside": args["group_state_array"],
+		 "all_enemies_defeated": args["group_all_enemies_defeated"],
+		 "cam_limits": args["group_cam_limits"],
+		}
+	
+	spawner.spawned_enemies = !args["spawn_enemies"]
+	spawner.is_enemy_challenge_room = args["is_enemy_challenge_room"]
+	spawner.add_to_group(EnemySpawnArea.GROUP_PREFIX + str(fused_rooms_count))
+	add_child(spawner)
 
 # merge rooms and place walls and constructions
 func gen_map_walls():
@@ -328,6 +377,7 @@ func gen_map_walls():
 				if randi_range(0, 100) >= 100 - merge_rates[fuse_pattern_id] && can_fuse(room_pos, fuse_pattern_id):
 					fuse(room_pos, fuse_pattern_id)
 				
+
 # place doors if still needed
 func gen_map_doors():
 	var key_having_rooms = []
@@ -335,6 +385,8 @@ func gen_map_doors():
 	var room_idx = 0
 	for door_placement in door_placement_buf:
 		var tilemap_pos = door_placement[0]
+		var door_state = DoorType.Open
+
 		# calc door position
 		match door_placement[1]:
 			Vector2.UP:
@@ -380,12 +432,11 @@ func gen_map_doors():
 				
 				locked_door_inst.twin_node = locked_door_inst2
 				locked_door_inst2.twin_node = locked_door_inst
-				
+				door_state = DoorType.Locked
 
 			# place the door
-			place_door(tilemap_pos, door_placement[1])
+			place_door(tilemap_pos, door_placement[1], $tilemap, door_state)
 		room_idx += 1
-		
 		
 func gen_pots():
 	for door_placement in door_placement_buf:
@@ -397,7 +448,8 @@ func gen_pots():
 func gen_line_holes(room_tilemap_position: Vector2i):
 	var hole_rect: Array = [Vector2(-1, -1), Vector2(1, -1), Vector2(1, 1), Vector2(-1, 1)]
 	hole_rect = hole_rect.map(func(el): return el * randi_range(3, 5) + Vector2(room_size) / 2)
-	var room_rect: PackedVector2Array = [Vector2(randi_range(0, 4), randi_range(0, 4)), Vector2(room_size.x, 0), Vector2(room_size) - Vector2(randi_range(0, 2), randi_range(0, 2)), Vector2(0, room_size.y)]
+	var room_rect: PackedVector2Array = [Vector2(randi_range(0, 4), randi_range(0, 4)), Vector2(room_size.x, 0), \
+		 Vector2(room_size) - Vector2(randi_range(0, 2), randi_range(0, 2)), Vector2(0, room_size.y)]
 	var intersection = Geometry2D.intersect_polygons(PackedVector2Array(hole_rect), room_rect)
 
 	if intersection.is_empty():
@@ -439,7 +491,6 @@ func spawn_pots(room_pos: Vector2i):
 			3:
 				rel_pos.y += randi_range(0, room_size.y - 5)
 				rel_pos.x = room_size.x - 5
-				
 
 		var pot_map_position = room_pos + rel_pos + Vector2i(2, 2)
 
@@ -447,22 +498,12 @@ func spawn_pots(room_pos: Vector2i):
 			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.UP) == Vector2i(4, 0) || \
 			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.DOWN) == Vector2i(5, 0) || \
 			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.LEFT) == Vector2i(4, 1) || \
-			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.RIGHT) == Vector2i(4, 2):
-			var p = pot.instantiate()
-			p.position = $tilemap.map_to_local(pot_map_position) * 0.5
-			add_child(p)
-			move_child(p, 1)
-
-func place_enemy_spawner(room_pos: Vector2i, group_id: int, group_state_array: PackedByteArray, group_cam_limits: PackedVector2Array, spawn_enemies: bool = true):
-	var room_center = $tilemap.map_to_local(room_pos + room_size / 2) / 2 - Vector2(355, 355) / 4
-	var spawner = enemy_spawner.instantiate()
-	spawner.position = room_center
-	spawner.group_id = fused_rooms_count
-	spawner.group_state_array = group_state_array
-	spawner.group_cam_limits = group_cam_limits
-	spawner.spawned_enemies = !spawn_enemies
-	spawner.add_to_group(EnemySpawnArea.GROUP_PREFIX + str(group_id))
-	add_child(spawner)
+			$tilemap.get_cell_atlas_coords(pot_map_position + Vector2i.RIGHT) == Vector2i(5, 1):
+			if $tilemap.get_cell_atlas_coords(global_to_tilemap(tilemap_to_global(pot_map_position))) == Vector2i(2, 1):
+				var p = pot.instantiate()
+				p.global_position = tilemap_to_global(pot_map_position)
+				add_child(p)
+				move_child(p, 1)
 
 func spawn_shop(room_pos):
 	var room_center = $tilemap.map_to_local(room_pos) * 0.5 + Vector2(1150, 900)
