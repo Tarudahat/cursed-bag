@@ -6,6 +6,7 @@ class_name Level
 @export var wall_count := 1
 @export var constructions_count := 1
 @export var hole_gen_rate := 50
+@export var maze_gen_rate := 50
 @export var pot_gen_rate := 100
 @export var challenge_room_rate := 8
 @export var max_pot_count := 10
@@ -32,6 +33,8 @@ var door_placement_buf: Array[Array] = []
 var room_door_data: Array[Array] = []
 var room_pos_tiles: Array[Vector4i] = []
 enum DoorType {Open, Locked, Enemy, Puzzle, Hidden}
+
+enum Biome {Default, Maze}
 
 
 var map := Array()
@@ -176,6 +179,12 @@ func clear_tile_region(from_pos: Vector2i, region_size: Vector2i, tilemap: TileM
 			var pos = from_pos + Vector2i(x, y)
 			tilemap.erase_cell(pos)
 
+func fill_tile_region(from_pos: Vector2i, region_size: Vector2i, atlas_coord: Vector2i, tilemap: TileMapLayer = $tilemap):
+	for x in region_size.x:
+		for y in region_size.y:
+			var pos = from_pos + Vector2i(x, y)
+			tilemap.set_cell(pos, 0, atlas_coord)
+
 func init_map_buffers():
 	# copy the door tiles into buffers
 	doors_buf.append_array([[], [], [], []])
@@ -241,20 +250,22 @@ func gen_map_layout():
 				should_lock_entrance = room_pos_tiles.size() >= minimum_rooms_before_lock_count && randi_range(0, 100) > 0 # - (r / rooms) * 85
 
 			# calc new room coord
-			new_room = current_room + Vector4i(dx * room_size.x, dy * room_size.y, 0, 0)
+			new_room = current_room + Vector4i(dx * room_size.x, dy * room_size.y, 0, Biome.Default)
 			
 			# ignore if it would overwrite a room
 			if new_room in room_pos_tiles:
 				continue
 			break
 			
-		# place the new room next
-		paste_tile_region(get_room_pos(new_room), room_buf)
-		room_pos_tiles.append(new_room)
-		
 		# add holes/ mazify
 		if randi_range(0, 100) >= 100 - hole_gen_rate:
 			gen_line_holes(get_room_pos(new_room))
+		elif randi_range(0, 100) >= 100 - maze_gen_rate:
+			new_room.w = Biome.Maze
+
+		# place the new room next
+		paste_tile_region(get_room_pos(new_room), room_buf)
+		room_pos_tiles.append(new_room)
 
 		# store to-be-placed doors
 		if r < rooms:
@@ -278,6 +289,8 @@ func gen_map_layout():
 		max_coord.y = max(new_room.y, max_coord.y)
 	
 	# apparently the coords were tilemap coords... 
+
+	# convert min_coord to map coord
 	min_coord /= room_size
 	max_coord /= room_size
 
@@ -295,7 +308,6 @@ func gen_map_layout():
 		coord -= min_coord
 		map[coord.y][coord.x] = Vector3i(0, get_room_biome(room), -1)
 		
-
 	var exit_node = exit.instantiate()
 	exit_node.position = ($tilemap.map_to_local(get_room_pos(current_room)) + Vector2(7.5 * 355, 4.5 * 355)) * 0.5
 	add_child(exit_node)
@@ -325,10 +337,34 @@ func fuse(pos: Vector2i, pattern_id: int):
 	
 	var is_challenge_room: bool = randi_range(0, 100) >= 100 - challenge_room_rate
 
+	# find maze "seed"
+	var maze_min: Vector2i = Vector2i.MAX
+	var maze_max: Vector2i = Vector2i.MIN
+	
+	var should_gen_maze: bool = false
+	var has_maze_seed: bool = merge_patterns[pattern_id].any(func(comp): return map[pos.y + int(comp.y)][pos.x + int(comp.x)] && map[pos.y + int(comp.y)][pos.x + int(comp.x)].y == Biome.Maze)
+
+	should_gen_maze = has_maze_seed
+	should_gen_maze = should_gen_maze && pattern_id < merge_patterns.size() - 1
+
+	if should_gen_maze:
+		# expand maze "seed" to entire room
+		for comp in merge_patterns[pattern_id]:
+			var room_pos = pos + Vector2i(comp.x, comp.y)
+			var room_tilemap_pos = (room_pos + min_coord) * room_size
+		
+			maze_min.x = min(maze_min.x, int(room_tilemap_pos.x))
+			maze_min.y = min(maze_min.y, int(room_tilemap_pos.y))
+			maze_max.x = max(maze_max.x, int(room_tilemap_pos.x + room_size.x))
+			maze_max.y = max(maze_max.y, int(room_tilemap_pos.y + room_size.y))
+
+		# generate maze
+		gen_maze(maze_min + Vector2i.ONE * 2, maze_max - Vector2i.ONE * 2)
+	
 	for comp in merge_patterns[pattern_id]:
 		var room_pos = pos + Vector2i(comp.x, comp.y)
 		var tile = map[room_pos.y][room_pos.x]
-		
+				
 		# fuse spawn areas by adding to the same group
 		var spawn_enemies = !(room_pos + min_coord == Vector2i.ZERO)
 		place_enemy_spawner({
@@ -338,13 +374,14 @@ func fuse(pos: Vector2i, pattern_id: int):
 			"spawn_enemies": spawn_enemies,
 		  	"group_all_enemies_defeated": group_all_enemies_defeated,
 		  	"is_enemy_challenge_room": is_challenge_room})
-		
+				
 		if tile != null:
 			map[room_pos.y][room_pos.x].x = pattern_id
 			map[room_pos.y][room_pos.x].z = fused_rooms_count
 			paste_tile_region((room_pos + min_coord) * room_size, walls_buf[comp.z])
-	room_door_data.append([])
-	fused_rooms_count += 1
+				
+		room_door_data.append([])
+		fused_rooms_count += 1
 
 
 func place_enemy_spawner(args: Dictionary):
@@ -364,6 +401,95 @@ func place_enemy_spawner(args: Dictionary):
 	spawner.is_enemy_challenge_room = args["is_enemy_challenge_room"]
 	spawner.add_to_group(EnemySpawnArea.GROUP_PREFIX + str(fused_rooms_count))
 	add_child(spawner)
+
+func get_neighbours(tile: Vector2i) -> Array[TileData]:
+	return [$tilemap.get_cell_tile_data(tile + Vector2i.LEFT), $tilemap.get_cell_tile_data(tile + Vector2i.RIGHT), \
+				$tilemap.get_cell_tile_data(tile + Vector2i.UP), $tilemap.get_cell_tile_data(tile + Vector2i.DOWN), \
+				$tilemap.get_cell_tile_data(tile + Vector2i.LEFT + Vector2i.DOWN), $tilemap.get_cell_tile_data(tile + Vector2i.RIGHT + Vector2i.DOWN), \
+				$tilemap.get_cell_tile_data(tile + Vector2i.LEFT + Vector2i.UP), $tilemap.get_cell_tile_data(tile + Vector2i.RIGHT + Vector2i.UP)]
+
+func get_neighbour_hole_count(neighbours: Array[TileData]) -> int:
+	var neighbouring_holes: int = 0
+
+	for neighbour in neighbours:
+		if neighbour && neighbour.get_custom_data("is_hole"):
+			neighbouring_holes += 1
+	
+	return neighbouring_holes
+
+func gen_maze(maze_min: Vector2i, maze_max: Vector2i):
+	fill_tile_region(maze_min, maze_max - maze_min, Vector2i(0, 3), $tilemap)
+	var maze_width: int = (maze_max.x - maze_min.x)
+	var maze_height: int = (maze_max.y - maze_min.y)
+	var maze_tile_count: int = maze_height * maze_width
+	var neighbour_limit: int = 2
+
+	var seen_tiles: PackedByteArray
+	var maze: Array
+	
+	seen_tiles.resize(maze_tile_count)
+
+	const neigbbour_positions = [Vector2i.UP, Vector2i.DOWN, Vector2i.LEFT, Vector2i.RIGHT, \
+			 Vector2i.DOWN + Vector2i.LEFT, Vector2i.RIGHT + Vector2i.DOWN, Vector2i.RIGHT, \
+			  Vector2i.UP + Vector2i.LEFT, Vector2i.RIGHT + Vector2i.UP]
+
+	var next_cell_pos: Vector2i = Vector2i(1, 1) + maze_min
+	var iters = 0
+	while iters < maze_tile_count * 0.5 && seen_tiles.count(1) < maze_tile_count:
+		var neighbouring_holes: int
+		var determined_next_cell = false
+
+		while iters < maze_tile_count * 0.5 && !determined_next_cell:
+			iters += 1
+
+			var tried_up = false
+			var tried_down = false
+			var tried_left = false
+			var tried_right = false
+
+			# try next neighbour
+			while !tried_up || !tried_down || !tried_left || !tried_right:
+				var next_cell_candidate = next_cell_pos
+				# choose direction
+				var i_rnd = randi_range(0, 8)
+				if i_rnd >= 6:
+					next_cell_candidate += Vector2i.RIGHT
+					tried_right = true
+				elif i_rnd >= 4:
+					next_cell_candidate += Vector2i.DOWN
+					tried_down = true
+				elif i_rnd >= 2:
+					next_cell_candidate += Vector2i.LEFT
+					tried_left = true
+				else:
+					next_cell_candidate += Vector2i.UP
+					tried_up = true
+
+				# check does the cell in that direction fullfill the criteria
+				var next_cell = $tilemap.get_cell_tile_data(next_cell_candidate)
+				neighbouring_holes = get_neighbour_hole_count(get_neighbours(next_cell_candidate))
+
+				if next_cell && 8 - neighbouring_holes <= neighbour_limit && next_cell.get_custom_data("is_hole") && next_cell_candidate.x >= maze_min.x && next_cell_candidate.y >= maze_min.y && next_cell_candidate.x < maze_max.x && next_cell_candidate.y < maze_max.y:
+					$tilemap.set_cell(next_cell_candidate, 0, Vector2i(2, 1))
+					maze.push_back(next_cell_pos)
+					next_cell_pos = next_cell_candidate
+					determined_next_cell = true
+
+			# non of the neighbours were good, track back to the previous cell
+			neighbour_limit = 2
+			if !determined_next_cell:
+				var cell_candidate_pos = maze.pop_back()
+				neighbour_limit = randi_range(2, 3)
+				if cell_candidate_pos:
+					next_cell_pos = Vector2i(cell_candidate_pos)
+
+		var local_offset = next_cell_pos - maze_min
+		seen_tiles[local_offset.x + local_offset.y * maze_width] = 1
+		for neighbour_pos in neigbbour_positions:
+			var neigbour_local_offset = (local_offset + neighbour_pos).x + (local_offset + neighbour_pos).y * maze_width
+			if neigbour_local_offset >= 0 && neigbour_local_offset < seen_tiles.size():
+				seen_tiles[neigbour_local_offset] = 1
+
 
 # merge rooms and place walls and constructions
 func gen_map_walls():
