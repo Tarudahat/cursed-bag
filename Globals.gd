@@ -34,10 +34,13 @@ func bezier_curve(start: Vector2, mid: Vector2, end: Vector2, t_lerp: float) -> 
 
 func next_level():
 	boss = null
-	#minimap = null
 	player_node = null
 	level_node = null
 
+	if player_ui && minimap:
+		minimap.prev_pin_coord = Vector2(-1, -1)
+		minimap.clear()
+		
 	if not Sounds.music.is_playing():
 		Sounds.music.play()
 	current_level += 1

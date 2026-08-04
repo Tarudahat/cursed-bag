@@ -10,7 +10,8 @@ func _ready() -> void:
 
 func _on_body_entered(body: Node2D) -> void:
 	if body is Player:
-		body.should_change_screen_target = true
-		body.moved_room = true
-		body.global_position += dir * dist
-		body.room_respawn_point = body.global_position
+		if !body.should_change_screen_target:
+			body.should_change_screen_target = true
+			body.moved_room = true
+			body.global_position += dir * dist
+			body.room_respawn_point = body.global_position

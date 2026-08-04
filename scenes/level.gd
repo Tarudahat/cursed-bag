@@ -6,7 +6,7 @@ class_name Level
 @export var wall_count := 1
 @export var constructions_count := 1
 @export var hole_gen_rate := 50
-@export var maze_gen_rate := 50
+@export var maze_gen_rate := 25
 @export var pot_gen_rate := 100
 @export var challenge_room_rate := 8
 @export var max_pot_count := 10
@@ -34,7 +34,7 @@ var room_door_data: Array[Array] = []
 var room_pos_tiles: Array[Vector4i] = []
 enum DoorType {Open, Locked, Enemy, Puzzle, Hidden}
 
-enum Biome {Default, Maze}
+enum Biome {Default, Maze, Hole}
 
 
 var map := Array()
@@ -119,9 +119,9 @@ func place_door(pos: Vector2i, dir: Vector2, tilemap: TileMapLayer = $tilemap, d
 		tp.dist = 750 - 100
 		tp2.dist = 750 - 100
 		
-	tp.dir = dir
+	tp.dir = dir.normalized()
 	tp.position = door_pos
-	tp2.dir = dir * -1
+	tp2.dir = (dir * -1).normalized()
 	tp2.position = door_pos + dir * door_dis
 
 	# calc room x, y, entrance, exit
@@ -253,31 +253,33 @@ func gen_map_layout():
 			new_room = current_room + Vector4i(dx * room_size.x, dy * room_size.y, 0, Biome.Default)
 			
 			# ignore if it would overwrite a room
-			if new_room in room_pos_tiles:
+			if room_pos_tiles.has(new_room):
 				continue
+
 			break
 			
-		# add holes/ mazify
-		if randi_range(0, 100) >= 100 - hole_gen_rate:
-			gen_line_holes(get_room_pos(new_room))
-		elif randi_range(0, 100) >= 100 - maze_gen_rate:
-			new_room.w = Biome.Maze
-
 		# place the new room next
 		paste_tile_region(get_room_pos(new_room), room_buf)
 		room_pos_tiles.append(new_room)
 
+		# add holes/ mazify
+		if randi_range(0, 100) >= 100 - hole_gen_rate:
+			gen_line_holes(get_room_pos(new_room))
+			new_room.w = Biome.Hole
+		elif randi_range(0, 100) >= 100 - maze_gen_rate:
+			new_room.w = Biome.Maze
+
 		# store to-be-placed doors
-		if r < rooms:
+		if r <= rooms:
 			# cur -> new, exit door + entry door
 			if new_room.y < current_room.y:
 				door_placement_buf.append([get_room_pos(current_room), Vector2.UP, should_lock_entrance])
 			elif new_room.y > current_room.y:
-				door_placement_buf.append([get_room_pos(new_room), Vector2.DOWN, should_lock_entrance])
+				door_placement_buf.append([get_room_pos(current_room), Vector2.DOWN, should_lock_entrance])
 			if new_room.x < current_room.x:
 				door_placement_buf.append([get_room_pos(current_room), Vector2.LEFT, should_lock_entrance])
 			elif new_room.x > current_room.x:
-				door_placement_buf.append([get_room_pos(new_room), Vector2.RIGHT, should_lock_entrance])
+				door_placement_buf.append([get_room_pos(current_room), Vector2.RIGHT, should_lock_entrance])
 
 		current_room = new_room
 
@@ -343,8 +345,9 @@ func fuse(pos: Vector2i, pattern_id: int):
 	
 	var should_gen_maze: bool = false
 	var has_maze_seed: bool = merge_patterns[pattern_id].any(func(comp): return map[pos.y + int(comp.y)][pos.x + int(comp.x)] && map[pos.y + int(comp.y)][pos.x + int(comp.x)].y == Biome.Maze)
+	var should_skip: bool = merge_patterns[pattern_id].any(func(comp): return map[pos.y + int(comp.y)][pos.x + int(comp.x)] && map[pos.y + int(comp.y)][pos.x + int(comp.x)].y == Biome.Hole)
 
-	should_gen_maze = has_maze_seed
+	should_gen_maze = has_maze_seed && !should_skip
 	should_gen_maze = should_gen_maze && pattern_id < merge_patterns.size() - 1
 
 	if should_gen_maze:
@@ -380,8 +383,8 @@ func fuse(pos: Vector2i, pattern_id: int):
 			map[room_pos.y][room_pos.x].z = fused_rooms_count
 			paste_tile_region((room_pos + min_coord) * room_size, walls_buf[comp.z])
 				
-		room_door_data.append([])
-		fused_rooms_count += 1
+	room_door_data.append([])
+	fused_rooms_count += 1
 
 
 func place_enemy_spawner(args: Dictionary):
@@ -435,11 +438,11 @@ func gen_maze(maze_min: Vector2i, maze_max: Vector2i):
 
 	var next_cell_pos: Vector2i = Vector2i(1, 1) + maze_min
 	var iters = 0
-	while iters < maze_tile_count * 0.5 && seen_tiles.count(1) < maze_tile_count:
+	while iters < maze_tile_count * 0.8 && seen_tiles.count(1) < maze_tile_count:
 		var neighbouring_holes: int
 		var determined_next_cell = false
 
-		while iters < maze_tile_count * 0.5 && !determined_next_cell:
+		while iters < maze_tile_count * 0.8 && !determined_next_cell:
 			iters += 1
 
 			var tried_up = false
@@ -518,11 +521,11 @@ func gen_map_doors():
 			Vector2.UP:
 				tilemap_pos += Vector2i(floor(room_size.x / 2.0 - 1), 1)
 			Vector2.DOWN:
-				tilemap_pos += Vector2i(floor(room_size.x / 2.0 - 1), -2)
+				tilemap_pos += Vector2i(floor(room_size.x / 2.0 - 1), room_size.y - 2)
 			Vector2.LEFT:
 				tilemap_pos += Vector2i(1, floor(room_size.y / 2.0 - 1))
 			Vector2.RIGHT:
-				tilemap_pos += Vector2i(-2, floor(room_size.y / 2.0 - 1))
+				tilemap_pos += Vector2i(room_size.x - 2, floor(room_size.y / 2.0 - 1))
 
 		# place door
 		if $tilemap.get_cell_atlas_coords(tilemap_pos) != Vector2i(2, 1): # evil magic number
@@ -594,6 +597,7 @@ func gen_line_holes(room_tilemap_position: Vector2i):
 
 		var line = Geometry2D.bresenham_line(v0, v1)
 		var keep_empty_tile_pos = line[clampi((line.size() - 2 + randi_range(0, 1)) / 2, 0, (line.size() - 1) / 2)]
+
 		for tile_pos in line:
 			if $tilemap.get_cell_atlas_coords(tile_pos + room_tilemap_position) == Vector2i(2, 1) && tile_pos != keep_empty_tile_pos:
 				$tilemap.set_cell(

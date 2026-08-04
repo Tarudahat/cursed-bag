@@ -6,7 +6,6 @@ var min_coord := Vector2i.MAX
 var prev_pin_coord: Vector2 = Vector2(-1, -1)
 
 func draw_map(map):
-	clear()
 	for x in map[0].size():
 		for y in map.size():
 			if map[y][x] != null:
