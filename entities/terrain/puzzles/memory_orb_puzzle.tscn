@@ -1,0 +1,12 @@
+[gd_scene format=3 uid="uid://5gu8l1nrkdvc"]
+
+[ext_resource type="Script" uid="uid://gv3ti4g6ici3" path="res://entities/terrain/puzzles/memory_orb_puzzle.gd" id="1_cudqb"]
+
+[node name="MemoryOrbPuzzle" type="Node2D" unique_id=674238508]
+script = ExtResource("1_cudqb")
+
+[node name="Timer" type="Timer" parent="." unique_id=1891144728]
+wait_time = 1.5
+one_shot = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

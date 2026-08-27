@@ -2,9 +2,9 @@ extends Area2D
 class_name EnemySpawnArea
 
 static var enemy_resources: Dictionary
-const enemy_resource_blacklist: PackedStringArray = ["bullet.tscn", "char_enemy.tscn", "enemy_spawn_area.gd", "static_enemy.tscn"]
+const enemy_resource_blacklist: PackedStringArray = ["bullet.tscn", "rocket.tscn", "char_enemy.tscn", "enemy_spawn_area.gd", "static_enemy.tscn", "spike.tscn"]
 
-var door_rsrc = preload("res://entities/terrain/enemy_door.tscn")
+static var puzzle_resources: Dictionary
 
 static var GROUP_PREFIX: String = "group_area_"
 var group_id: int
@@ -22,17 +22,21 @@ var is_enemy_challenge_room: bool = false
 var doors_cleared: bool = false
 var door_instances: Array
 
+func load_resources(directory: String, rsrcs_dict: Dictionary, blacklist: PackedStringArray = []) -> void:
+	if rsrcs_dict.is_empty():
+		var rsrcs = ResourceLoader.list_directory(directory)
+		for res in rsrcs:
+			if res.ends_with(".tscn") && not (res in blacklist):
+				rsrcs_dict[res.get_basename()] = load(directory + "/" + res)
+
+
 func _ready() -> void:
 	# assign group member idx
 	group_member_idx = group_member_count
 
-	# load rsrcs
-	if enemy_resources.is_empty():
-		var rsrcs = ResourceLoader.list_directory("res://entities/enemies")
-		for res in rsrcs:
-			if res.ends_with(".tscn") && not (res in enemy_resource_blacklist):
-				enemy_resources[res.get_basename()] = load("res://entities/enemies" + "/" + res)
-			
+	load_resources("res://entities/enemies", enemy_resources, enemy_resource_blacklist)
+	load_resources("res://entities/terrain/puzzles", puzzle_resources)
+						
 	# set cam boundaries for group
 	var min_vec: Vector2 = group_shared_state["cam_limits"][0]
 	var max_vec: Vector2 = group_shared_state["cam_limits"][1]
@@ -86,6 +90,7 @@ func _process(_delta: float) -> void:
 
 	if should_spawn_enemies:
 		spawn_enemies()
+
 		deactivate_enemies()
 		$ActivationTimer.start()
 		should_spawn_enemies = false
@@ -96,26 +101,30 @@ func _process(_delta: float) -> void:
 
 func spawn_enemies():
 	var enemy = null
-	var choice = randi_range(0, 3)
-	var count = 0
+	var choice = randi_range(0, enemy_resources.size() - 1)
+	var enemy_count = 0
 
 	if choice == 0:
-		count = randi_range(2, 5) + Globals.current_level * 2
+		enemy_count = randi_range(2, 5) + Globals.current_level * 2
 	elif choice == 1:
-		count = 1 + Globals.current_level
-		if count > 3:
-			count = 3
+		enemy_count = 1 + Globals.current_level
+		if enemy_count > 3:
+			enemy_count = 3
 	elif choice == 2:
-		count = 1 + Globals.current_level
-		if count > 3:
-			count = 3
+		enemy_count = 1 + Globals.current_level
+		if enemy_count > 3:
+			enemy_count = 3
 	else:
-		count = 2 + Globals.current_level
-		if count > 3:
-			count = 3
+		enemy_count = 2 + Globals.current_level
+		if enemy_count > 3:
+			enemy_count = 3
+
+	# todo make enemy groups/ classes -> 
+	# main atk, mini boss, support
+	# 
 
 	# todo make sure this does not end up on the doors
-	for i in range(count):
+	for i in range(enemy_count):
 		var rnd_pos_offset = Vector2(randi_range(-4, 4) * 355 / 2.0, randf_range(-1.5, 1.5) * 300.0 / 2.0)
 
 		match choice:
@@ -130,9 +139,19 @@ func spawn_enemies():
 				enemy = enemy_resources["spear_crab"].instantiate()
 				if global_position.x + 2000 > Globals.player_node.global_position.x || global_position.x - 2000 < Globals.player_node.global_position.x:
 					enemy.movement_direction = Vector2.UP
+			4:
+				enemy = enemy_resources["artillery"].instantiate()
+			5:
+				enemy = enemy_resources["bomb_buddy"].instantiate()
+			6:
+				enemy = enemy_resources["puff_shroom"].instantiate()
+			7:
+				enemy = enemy_resources["mage"].instantiate()
+			_:
+				enemy = enemy_resources["bomb_buddy"].instantiate()
 				
 		if choice != 2:
-			enemy.position = position + rnd_pos_offset
+			enemy.global_position = global_position + rnd_pos_offset
 
 		if enemy.get_parent() != null:
 			owned_enemies.erase(enemy)
@@ -141,12 +160,12 @@ func spawn_enemies():
 		get_parent().add_child(enemy)
 		owned_enemies.append(enemy)
 		if choice == 2:
-			enemy.position = position + rnd_pos_offset
+			enemy.global_position = global_position + rnd_pos_offset
 
 func spawn_enemy_doors() -> void:
 	for door_data in Globals.level_node.room_door_data[group_id]:
 				var door_pos = door_data[0]
-				var door_inst = door_rsrc.instantiate()
+				var door_inst = puzzle_resources["enemy_door"].instantiate()
 
 				door_instances.append(door_inst)
 				door_inst.global_position = door_pos

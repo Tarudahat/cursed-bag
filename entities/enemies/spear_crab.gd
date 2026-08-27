@@ -23,14 +23,13 @@ func _ready() -> void:
 	super()
 	speed = 400
 	atk = 5
-	knockback_resistance = 1
 	spr_inst = spear.instantiate()
 	spr_inst.spear_owner = self
 	spr_inst.rotation_degrees = -70
 	add_child(spr_inst)
 	
 	jab_atk_base_wait_time = $jab_cooldown.wait_time
-	throw_atk_base_wait_time = $throw_atk_cooldown.wait_time
+	throw_atk_base_wait_time = $throw_atk_cooldown.wait_time + randf_range(-1.0, 2.0)
 
 func _physics_process(_delta: float) -> void:
 	if !spr_inst.on_ground:

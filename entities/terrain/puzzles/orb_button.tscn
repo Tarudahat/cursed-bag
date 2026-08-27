@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://bvevns8mx1p6r"]
+
+[ext_resource type="Script" uid="uid://vsd3aw8a8wql" path="res://entities/terrain/puzzles/orb_button.gd" id="1_3ngjs"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="2_dv618"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_dv618"]
+radius = 84.48077
+
+[node name="OrbButton" type="CharacterBody2D" unique_id=313901752]
+collision_layer = 2
+collision_mask = 3
+script = ExtResource("1_3ngjs")
+metadata/_custom_type_script = "uid://begn1lkahd4y4"
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1029510480]
+modulate = Color(1.05, 0.715, 2.055, 0.54901963)
+rotation = 0.7853982
+texture = ExtResource("2_dv618")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=925450169]
+shape = SubResource("CircleShape2D_dv618")
+
+[connection signal="got_hit" from="." to="." method="_on_got_hit"]
+[connection signal="inv_end" from="." to="." method="_on_inv_end"]

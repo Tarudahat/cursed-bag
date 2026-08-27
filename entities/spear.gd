@@ -42,8 +42,9 @@ func reattach_to_owner() -> void:
 	$CollisionShape2D.disabled = true
 
 func init_throw(target: Vector2):
-	spear_owner.remove_child(self)
-	spear_owner.get_parent().add_child(self)
+	if !(spear_owner && spear_owner is Player):
+		spear_owner.remove_child(self)
+		spear_owner.get_parent().add_child(self)
 
 	target_position = target
 	shield_blocked = false
@@ -57,26 +58,33 @@ func init_throw(target: Vector2):
 func perform_throw(delta):
 	var mid_point = starting_position + (target_position - starting_position) / 2 + Vector2.UP * throw_height
 	var new_pos = Globals.bezier_curve(starting_position, mid_point, target_position, 0.01)
-	look_at(new_pos)
 	
 	if $AnimationPlayer.is_playing():
 		if spear_owner != null:
 			starting_position = spear_owner.global_position
-			target_position = spear_owner.enemy_target_position
+			if spear_owner.get("enemy_target_position"):
+				target_position = spear_owner.enemy_target_position
 		global_position = starting_position
 	else: # after charge animation
+		if t == 0 && spear_owner && spear_owner is Player:
+			spear_owner.remove_child(self)
+			spear_owner.get_parent().add_child(self)
+	
 		t += delta * speed
 		new_pos = Globals.bezier_curve(starting_position, mid_point, target_position, t)
 
-		look_at(new_pos)
+		if t < 0.90:
+			look_at(new_pos)
 		global_position = new_pos
+
+		if t >= 0.20:
+			if Globals.level_node && Globals.level_node.is_in_wall($CollisionShape2D.global_position):
+				shield_blocked = true
 
 		if t >= 0.75:
 			$CollisionShape2D.disabled = false
-		
+				
 		if t >= 1.0 || shield_blocked:
-			if shield_blocked:
-				look_at(Globals.bezier_curve(starting_position, mid_point, target_position, 1.0))
 			$CollisionShape2D.shape.radius = 200
 			on_ground = true
 			emit_signal("spear_landed", target_position)
@@ -121,7 +129,8 @@ func _on_body_entered(body: Node2D) -> void:
 			shield_blocked = true
 		elif body is CharEntity && !on_ground:
 				body.knockback(global_position.direction_to(body.global_position) * knockback_strength)
-				#body.apply_status_effect(CharEntity.StatusEffect.STUN)
+				if spear_owner.has_status_effect(CharEntity.StatusEffect.BOUNCER):
+					body.apply_status_effect(CharEntity.StatusEffect.BOUNCY)
 				body.damage(dmg)
 	elif on_ground:
 		should_reattach = true

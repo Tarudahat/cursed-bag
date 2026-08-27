@@ -14,11 +14,11 @@ var hole_global_pos: Vector2
 
 func _ready() -> void:
 	$gem/Sprite2D.play(str(randi_range(0, 1)))
-	velocity = Vector2(randf_range(-1, 1) * 1300, randf_range(-1, 1) * 1300)
+	velocity = Vector2(randf_range(-1, 1) * 780, randf_range(-1, 1) * 780)
 	
-	if Globals.player_node.has_item(Player.Items.GEM_MAGNET):
-		pull_mulitplyr = 50.0
-		$AttractionField/CollisionShape2D.shape.radius *= 1.5
+	#if Globals.player_node.has_item(DungeonItems.Items.GEM_MAGNET):
+		#pull_mulitplyr = 50.0
+		#$AttractionField/CollisionShape2D.shape.radius *= 1.5
 
 func _physics_process(_delta: float) -> void:
 	if falling_into_hole:
@@ -54,8 +54,8 @@ func _physics_process(_delta: float) -> void:
 				velocity = collision.get_normal() * velocity.length() * 0.9
 
 
-		velocity.x = move_toward(velocity.x, 0, 2.5)
-		velocity.y = move_toward(velocity.y, 0, 2.5)
+		velocity.x = move_toward(velocity.x, 0, 3)
+		velocity.y = move_toward(velocity.y, 0, 3)
 
 func _on_timer_timeout() -> void:
 	can_be_collected = true

@@ -1,0 +1,16 @@
+[gd_scene format=3 uid="uid://qt7ieo2xbrrs"]
+
+[ext_resource type="Texture2D" uid="uid://ckomt0ky53us7" path="res://assets/enemy/caster.png" id="1_w2mp0"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_mgdh5"]
+radius = 56.0
+
+[node name="gacha_ball" type="RigidBody2D" unique_id=235603643]
+gravity_scale = 1.5
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=61078624]
+shape = SubResource("CircleShape2D_mgdh5")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1417343241]
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_w2mp0")

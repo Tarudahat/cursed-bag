@@ -8,8 +8,8 @@
 radius = 74.431175
 
 [node name="Pot" type="CharacterBody2D" unique_id=1499848560]
-collision_layer = 2
-collision_mask = 7
+collision_layer = 128
+collision_mask = 5
 script = ExtResource("1_rpcwm")
 default_death = false
 hp = 1

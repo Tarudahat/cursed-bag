@@ -16,9 +16,21 @@ script = ExtResource("1_6d6rd")
 
 [node name="Button" type="Button" parent="." unique_id=798728025]
 layout_mode = 0
-offset_left = 368.5
-offset_top = 499.5
-offset_right = 1112.5
-offset_bottom = 939.5
+offset_left = 738.5
+offset_top = 577.5
+offset_right = 861.5
+offset_bottom = 608.5
+scale = Vector2(6.841851, 7.5470686)
+text = "PLAY"
+
+[node name="Button2" type="Button" parent="." unique_id=750455443]
+layout_mode = 0
+offset_left = 738.5
+offset_top = 962.5
+offset_right = 861.5
+offset_bottom = 993.5
+scale = Vector2(6.841851, 7.5470686)
+text = "GACHA"
 
 [connection signal="pressed" from="Button" to="." method="_on_button_pressed"]
+[connection signal="pressed" from="Button2" to="." method="_on_button_2_pressed"]

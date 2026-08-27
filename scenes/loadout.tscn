@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://lymgpw6coadg"]
+
+[ext_resource type="Texture2D" uid="uid://dhen32jrd63s3" path="res://assets/UI/loadout.png" id="1_x2asy"]
+[ext_resource type="Script" uid="uid://bcy3sl5jlbkwl" path="res://scenes/loadout.gd" id="1_y4ltr"]
+[ext_resource type="PackedScene" uid="uid://c6h0vulj3yytr" path="res://scenes/carousel.tscn" id="2_a3k4y"]
+
+[node name="Loadout" type="Control" unique_id=1049888389]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+scale = Vector2(0.84000015, 0.84000015)
+script = ExtResource("1_y4ltr")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1008228326]
+visible = false
+z_index = -2
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = 530.0
+offset_bottom = 562.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("1_x2asy")
+stretch_mode = 2
+
+[node name="CharaCarousel" parent="." unique_id=1186769511 instance=ExtResource("2_a3k4y")]
+layout_mode = 1
+offset_left = 379.7618
+offset_top = 141.66664
+offset_right = 379.76172
+offset_bottom = 141.66663
+
+[node name="WeaponCarousel" parent="." unique_id=149895897 instance=ExtResource("2_a3k4y")]
+layout_mode = 1
+offset_left = 379.76184
+offset_top = 621.42847
+offset_right = 379.76172
+offset_bottom = 621.42847
+carousel_resource_dir = "res://assets/UI/carousel_02"
+
+[node name="ButtonBack" type="Button" parent="." unique_id=721996220]
+layout_mode = 0
+offset_left = 274.99997
+offset_top = 1151.1902
+offset_right = 324.99997
+offset_bottom = 1182.1902
+scale = Vector2(9.561822, 6.4590364)
+text = "BACK"
+
+[node name="ButtonStart" type="Button" parent="." unique_id=282159841]
+layout_mode = 0
+offset_left = 1002.38074
+offset_top = 1151.1902
+offset_right = 1123.3807
+offset_bottom = 1182.1902
+scale = Vector2(7.801823, 6.4590364)
+text = "Venture Forth!"
+
+[connection signal="button_up" from="ButtonBack" to="." method="_on_button_back_button_up"]
+[connection signal="pressed" from="ButtonBack" to="." method="_on_button_back_pressed"]
+[connection signal="pressed" from="ButtonStart" to="." method="_on_button_start_pressed"]

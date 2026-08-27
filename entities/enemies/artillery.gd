@@ -12,6 +12,9 @@ const max_shots: int = 5
 func _ready() -> void:
 	super()
 
+func _physics_process(delta: float) -> void:
+	char_entity_move_and_slide()
+
 func _process(delta: float) -> void:
 	if shots_shot < max_shots && player_in_range:
 		if can_shoot && Globals.player_node != null:

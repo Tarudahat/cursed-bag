@@ -5,9 +5,9 @@ class_name Level
 @export var room_size := Vector2i(16, 10)
 @export var wall_count := 1
 @export var constructions_count := 1
-@export var hole_gen_rate := 50
-@export var maze_gen_rate := 25
-@export var pot_gen_rate := 100
+@export var hole_gen_rate := 40
+@export var maze_gen_rate := 55
+@export var pot_gen_rate := 65
 @export var challenge_room_rate := 8
 @export var max_pot_count := 10
 @export var minimum_rooms_before_lock_count := 6
@@ -36,6 +36,7 @@ enum DoorType {Open, Locked, Enemy, Puzzle, Hidden}
 
 enum Biome {Default, Maze, Hole}
 
+var exit_room
 
 var map := Array()
 var min_coord := Vector2i.MAX
@@ -49,14 +50,34 @@ const merge_patterns = \
 	[], # 0 reserved for none
 	[Vector3i(0, 0, 1), Vector3i(0, 1, 4), Vector3i(1, 0, 2), Vector3i(1, 1, 3)], # sqr
 	[Vector3i(0, 0, 7), Vector3i(0, 1, 8)], # straight |
+	[Vector3i(0, 0, 10), Vector3i(0, 1, 11)], # straight | e
+	[Vector3i(0, 0, 12), Vector3i(0, 1, 13)], # straight | ++
+	[Vector3i(0, 0, 17), Vector3i(0, 1, 18)], # straight | bonga
+	[Vector3i(0, 0, 23), Vector3i(0, 1, 24)], # straight | hook
 	[Vector3i(0, 0, 6), Vector3i(1, 0, 5)], # straight -
+	[Vector3i(0, 0, 15), Vector3i(1, 0, 14)], # straight - wobble
+	[Vector3i(0, 0, 22), Vector3i(1, 0, 21)], # straight - -\
+	[Vector3i(0, 0, 9)], # single +
+	[Vector3i(0, 0, 19)], # single ||
+	[Vector3i(0, 0, 16)], # single drop
+	[Vector3i(0, 0, 20)], # single |\
 	[Vector3i(0, 0, 0)], # single
 ]
 const merge_rates = \
 [
 	0,
 	30,
-	40,
+	20,
+	30,
+	30,
+	30,
+	30,
+	30,
+	30,
+	30,
+	20,
+	30,
+	20,
 	30,
 	100
 ]
@@ -310,10 +331,7 @@ func gen_map_layout():
 		coord -= min_coord
 		map[coord.y][coord.x] = Vector3i(0, get_room_biome(room), -1)
 		
-	var exit_node = exit.instantiate()
-	exit_node.position = ($tilemap.map_to_local(get_room_pos(current_room)) + Vector2(7.5 * 355, 4.5 * 355)) * 0.5
-	add_child(exit_node)
-	move_child(exit_node, 1)
+	exit_room = current_room
 	
 
 # is the given pattern found at the given position on the map?
@@ -405,13 +423,16 @@ func place_enemy_spawner(args: Dictionary):
 	spawner.add_to_group(EnemySpawnArea.GROUP_PREFIX + str(fused_rooms_count))
 	add_child(spawner)
 
-func get_neighbours(tile: Vector2i) -> Array[TileData]:
-	return [$tilemap.get_cell_tile_data(tile + Vector2i.LEFT), $tilemap.get_cell_tile_data(tile + Vector2i.RIGHT), \
-				$tilemap.get_cell_tile_data(tile + Vector2i.UP), $tilemap.get_cell_tile_data(tile + Vector2i.DOWN), \
-				$tilemap.get_cell_tile_data(tile + Vector2i.LEFT + Vector2i.DOWN), $tilemap.get_cell_tile_data(tile + Vector2i.RIGHT + Vector2i.DOWN), \
+func get_neighbours(tile: Vector2i) -> Array:
+	return get_neighbours_direct(tile) + [$tilemap.get_cell_tile_data(tile + Vector2i.LEFT + Vector2i.DOWN), $tilemap.get_cell_tile_data(tile + Vector2i.RIGHT + Vector2i.DOWN), \
 				$tilemap.get_cell_tile_data(tile + Vector2i.LEFT + Vector2i.UP), $tilemap.get_cell_tile_data(tile + Vector2i.RIGHT + Vector2i.UP)]
 
-func get_neighbour_hole_count(neighbours: Array[TileData]) -> int:
+func get_neighbours_direct(tile: Vector2i) -> Array[TileData]:
+	return [$tilemap.get_cell_tile_data(tile + Vector2i.LEFT), $tilemap.get_cell_tile_data(tile + Vector2i.RIGHT), \
+				$tilemap.get_cell_tile_data(tile + Vector2i.UP), $tilemap.get_cell_tile_data(tile + Vector2i.DOWN)]
+
+
+func get_neighbour_hole_count(neighbours: Array) -> int:
 	var neighbouring_holes: int = 0
 
 	for neighbour in neighbours:
@@ -510,6 +531,7 @@ func gen_map_walls():
 # place doors if still needed
 func gen_map_doors():
 	var key_having_rooms = []
+	const doorable_wall_tiles = [Vector2i(4, 0), Vector2i(5, 0), Vector2i(4, 1), Vector2i(5, 1)]
 
 	var room_idx = 0
 	for door_placement in door_placement_buf:
@@ -528,7 +550,7 @@ func gen_map_doors():
 				tilemap_pos += Vector2i(room_size.x - 2, floor(room_size.y / 2.0 - 1))
 
 		# place door
-		if $tilemap.get_cell_atlas_coords(tilemap_pos) != Vector2i(2, 1): # evil magic number
+		if $tilemap.get_cell_atlas_coords(tilemap_pos) in doorable_wall_tiles:
 			var key_room_idx = randi_range(minimum_rooms_before_lock_count, room_idx)
 
 			while key_room_idx < door_placement_buf.size() && door_placement_buf[key_room_idx][2] || key_room_idx in key_having_rooms:
@@ -635,6 +657,51 @@ func spawn_pots(room_pos: Vector2i):
 				add_child(p)
 				move_child(p, 1)
 
+func is_in_wall(glob_pos: Vector2) -> bool:
+	var pos: Vector2i = global_to_tilemap(glob_pos)
+	var tile_data = $tilemap.get_cell_tile_data(pos)
+	return tile_data && tile_data.get_custom_data("is_wall")
+	
+func is_in_wall_or_hole(glob_pos: Vector2) -> bool:
+	var pos: Vector2i = global_to_tilemap(glob_pos)
+	var tile_data = $tilemap.get_cell_tile_data(pos)
+	return tile_data && (tile_data.get_custom_data("is_hole") || tile_data.get_custom_data("is_wall"))
+			
+func find_twobytwo_space(glob_pos: Vector2) -> Vector2:
+	var pos: Vector2i = global_to_tilemap(glob_pos)
+	
+	var room = global_to_room(glob_pos)
+	for x in room_size.x:
+		for y in room_size.y:
+			var room_tile_off = Vector2i(x,y)
+			var tile_data0 = $tilemap.get_cell_tile_data(pos+room_tile_off)
+			var tile_data1 = $tilemap.get_cell_tile_data(pos+room_tile_off+Vector2i.RIGHT)
+			var tile_data2 = $tilemap.get_cell_tile_data(pos+room_tile_off+Vector2i.DOWN)
+			var tile_data3 = $tilemap.get_cell_tile_data(pos+room_tile_off+Vector2i.DOWN+Vector2i.RIGHT)
+			
+			if tile_data0 && !tile_data0.get_custom_data("is_wall") &&\
+				tile_data1 && !tile_data1.get_custom_data("is_wall") &&\
+				tile_data2 && !tile_data2.get_custom_data("is_wall") &&\
+				tile_data3 && !tile_data3.get_custom_data("is_wall"):
+				if x == 0 && y == 0:
+					return glob_pos
+				return tilemap_to_global(pos + room_tile_off)
+	return tilemap_to_global(pos)
+			
+func find_spawn_pos(glob_pos: Vector2, twobytwo:bool = false) -> Vector2:
+	if twobytwo:
+		return find_twobytwo_space(glob_pos)
+	else:
+		if is_in_wall_or_hole(glob_pos):
+			for dir in [Vector2.DOWN, Vector2.LEFT,Vector2.UP, Vector2.RIGHT]:
+				for dist in 4:
+					var candidate_pos = glob_pos + dir * dist * 355
+					if !is_in_wall_or_hole(candidate_pos):
+						return candidate_pos
+						
+	return glob_pos
+	
+
 func spawn_shop(room_pos):
 	var room_center = $tilemap.map_to_local(room_pos) * 0.5 + Vector2(1150, 900)
 	var s = shop.instantiate()
@@ -649,6 +716,12 @@ func _ready() -> void:
 	gen_map_doors()
 	gen_pots()
 
+	var exit_node = exit.instantiate()
+	exit_node.global_position = to_global($tilemap.map_to_local(get_room_pos(exit_room)) + Vector2(7.5 * 355, 4.5 * 355) )* 0.5
+	exit_node.global_position = find_spawn_pos(exit_node.global_position, true)
+	add_child(exit_node)
+	move_child(exit_node, 1)
+
 	Globals.level_node = self
 
 	
@@ -657,9 +730,12 @@ func _process(_delta: float) -> void:
 	
 	if not spawned_mobs:
 		if Globals.minimap != null:
+			Globals.minimap.clear()
 			Globals.minimap.draw_map(map)
 			Globals.minimap.room_size = room_size
 			Globals.minimap.min_coord = min_coord
+
+		$Player.global_position = find_spawn_pos($Player.global_position)
 
 		for room in room_pos_tiles:
 			var pos = get_room_pos(room)

@@ -1,4 +1,5 @@
 extends Area2D
+class_name Bullet
 
 var direction = Vector2.ZERO
 var knockback_strength = 3000

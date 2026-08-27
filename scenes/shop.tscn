@@ -1,15 +1,10 @@
 [gd_scene format=3 uid="uid://bb6ajhw6sqqhg"]
 
-[ext_resource type="PackedScene" uid="uid://bocsxpr5ved0d" path="res://scenes/hp_pot.tscn" id="1_1l46r"]
-[ext_resource type="PackedScene" uid="uid://ccbbm3crjuftr" path="res://scenes/shild.tscn" id="2_032fp"]
-[ext_resource type="PackedScene" uid="uid://drhl5iiy75v7g" path="res://scenes/ankh.tscn" id="3_2fc2m"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="1_lx5au"]
+[ext_resource type="Script" uid="uid://dsodoxqe45rvc" path="res://scenes/shop.gd" id="1_xfvoa"]
 
 [node name="Shop" type="Node2D" unique_id=1381165143]
+script = ExtResource("1_xfvoa")
 
-[node name="hp_pot" parent="." unique_id=1844268742 instance=ExtResource("1_1l46r")]
-position = Vector2(-440, 0)
-
-[node name="shild" parent="." unique_id=5499379 instance=ExtResource("2_032fp")]
-
-[node name="ankh" parent="." unique_id=1591505503 instance=ExtResource("3_2fc2m")]
-position = Vector2(472, 0)
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=44322387]
+texture = ExtResource("1_lx5au")

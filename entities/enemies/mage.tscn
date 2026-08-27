@@ -1,0 +1,63 @@
+[gd_scene format=3 uid="uid://goosr634uwgg"]
+
+[ext_resource type="Script" uid="uid://hbf1g634abvf" path="res://entities/enemies/mage.gd" id="1_evtv4"]
+[ext_resource type="Texture2D" uid="uid://uv076jj83h6j" path="res://assets/player/hero_front.png" id="2_1lqty"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_d1m2g"]
+radius = 152.0
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_y6huv"]
+atlas = ExtResource("2_1lqty")
+region = Rect2(0, 0, 400, 400)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_a61ui"]
+atlas = ExtResource("2_1lqty")
+region = Rect2(400, 0, 400, 400)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_cbu1o"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_y6huv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_a61ui")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_evtv4"]
+radius = 1542.9485
+
+[node name="CharEnemy" type="CharacterBody2D" unique_id=1117018489]
+collision_layer = 5
+collision_mask = 5
+script = ExtResource("1_evtv4")
+metadata/_custom_type_script = "uid://dhalpxunvn8ux"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=373116511]
+shape = SubResource("CircleShape2D_d1m2g")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1481800307]
+self_modulate = Color(5.4700704, 0, 0, 1)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_cbu1o")
+frame_progress = 0.027012786
+
+[node name="Area2D" type="Area2D" parent="." unique_id=608626512]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D" unique_id=1537289976]
+shape = SubResource("CircleShape2D_evtv4")
+
+[node name="BeamCD" type="Timer" parent="." unique_id=1150970710]
+
+[node name="WanderCD" type="Timer" parent="." unique_id=400881814]
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
+[connection signal="timeout" from="BeamCD" to="." method="_on_beam_cd_timeout"]
+[connection signal="timeout" from="WanderCD" to="." method="_on_wander_cd_timeout"]

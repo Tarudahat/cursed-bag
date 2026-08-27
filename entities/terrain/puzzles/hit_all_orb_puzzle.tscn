@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://tc7vnd6fjvam"]
+
+[ext_resource type="Script" uid="uid://dm37veqfirb4a" path="res://entities/terrain/puzzles/hit_all_orb_puzzle.gd" id="1_oksd3"]
+
+[node name="HitAllOrbPuzzle" type="Node2D" unique_id=831785280]
+script = ExtResource("1_oksd3")

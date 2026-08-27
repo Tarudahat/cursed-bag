@@ -1,4 +1,5 @@
 extends Area2D
+class_name Rocket
 
 var explosion = preload("res://entities/explosion_area.tscn")
 
@@ -25,16 +26,16 @@ func _ready() -> void:
 	set_collision_mask_value(3, false)
 	set_collision_mask_value(4, false)
 
-func _physics_process(delta: float) -> void:		
+func _physics_process(delta: float) -> void:
 	velocity = global_position.direction_to(target_position) * speed * target_position.distance_to(start_position) * 0.001
-	t = global_position.distance_to(start_position)\
+	t = global_position.distance_to(start_position) \
 		/ target_position.distance_to(start_position)
 	
 	$AnimatedSprite2D.look_at(Globals.bezier_curve(start_position, middle_position, target_position, t))
-	$AnimatedSprite2D.scale = Vector2(2,2) * $AnimatedSprite2D.global_position.distance_to(global_position) / 355 / 2
+	#$AnimatedSprite2D.scale = Vector2(2, 2) * $AnimatedSprite2D.global_position.distance_to(global_position) / 355 / 2
 	
-	$AnimatedSprite2D.scale.x = clampf($AnimatedSprite2D.scale.x, 1, 1.5)
-	$AnimatedSprite2D.scale.y = clampf($AnimatedSprite2D.scale.y, 1, 1.5)
+	#$AnimatedSprite2D.scale.x = clampf($AnimatedSprite2D.scale.x, 1, 1.5)
+	#$AnimatedSprite2D.scale.y = clampf($AnimatedSprite2D.scale.y, 1, 1.5)
 	
 	$AnimatedSprite2D.global_position = Globals.bezier_curve(start_position, middle_position, target_position, t) - velocity * delta
 			

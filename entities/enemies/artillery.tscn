@@ -17,8 +17,8 @@ size = Vector2(28.961424, 33.099266)
 radius = 1120.7141
 
 [node name="Artillery" type="CharacterBody2D" unique_id=1711594550]
-collision_layer = 4
-collision_mask = 4
+collision_layer = 5
+collision_mask = 5
 script = ExtResource("1_xttb5")
 hp = 35
 blast_resistant = true

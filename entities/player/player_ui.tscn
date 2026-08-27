@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://dvfc3oxu7oxnv" path="res://assets/UI/full_curse.png" id="5_61xvw"]
 [ext_resource type="PackedScene" uid="uid://dhijonbin4m85" path="res://entities/player/minimap.tscn" id="6_35srt"]
 [ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="7_ddkst"]
+[ext_resource type="Texture2D" uid="uid://cvcfsu8uxcevf" path="res://assets/UI/textbox.png" id="8_y4a7i"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_0i614"]
 load_path = "res://.godot/imported/heart1.png-05ac3a86e8a3c940d810b4634b9c5e53.ctex"
@@ -73,17 +74,19 @@ text = "GEMS:"
 
 [node name="curbar" type="TextureProgressBar" parent="PlayerUI" unique_id=718704234]
 layout_mode = 0
-offset_left = -368.0
-offset_top = 184.0
-offset_right = 25.0
-offset_bottom = 937.0
+offset_left = 167.16412
+offset_top = 167.16418
+offset_right = 560.1641
+offset_bottom = 920.1642
+rotation = 1.5707964
 scale = Vector2(0.6799927, 0.6799927)
 fill_mode = 3
 texture_under = ExtResource("4_wq7df")
 texture_progress = ExtResource("5_61xvw")
 
 [node name="minimap" parent="PlayerUI" unique_id=137579781 instance=ExtResource("6_35srt")]
-position = Vector2(1913.4326, 94.02985)
+modulate = Color(1, 1, 1, 0.536)
+position = Vector2(1743.2834, 59.701538)
 scale = Vector2(3, 3)
 
 [node name="BossBar" type="TextureProgressBar" parent="PlayerUI" unique_id=549631370]
@@ -97,3 +100,57 @@ texture_under = ExtResource("7_ddkst")
 texture_progress = ExtResource("7_ddkst")
 tint_under = Color(0, 0, 0, 1)
 tint_progress = Color(12.8605, 0.042388093, 10.238218, 1)
+
+[node name="YesNoDialog" type="TextureRect" parent="PlayerUI" unique_id=895521157]
+visible = false
+layout_mode = 0
+offset_left = 113.4328
+offset_top = 485.07452
+offset_right = 1898.5073
+offset_bottom = 1550.7461
+texture = ExtResource("8_y4a7i")
+
+[node name="YesButton" type="TextureButton" parent="PlayerUI/YesNoDialog" unique_id=996471822]
+layout_mode = 0
+offset_left = 1188.0594
+offset_top = 637.3136
+offset_right = 1316.0594
+offset_bottom = 765.3136
+scale = Vector2(6.3134336, 1.5373135)
+texture_normal = ExtResource("7_ddkst")
+
+[node name="NoButton" type="TextureButton" parent="PlayerUI/YesNoDialog" unique_id=1975254144]
+layout_mode = 0
+offset_left = 1068.6566
+offset_top = 876.1194
+offset_right = 1196.6566
+offset_bottom = 1004.1194
+scale = Vector2(6.3134336, 1.5970149)
+texture_normal = ExtResource("7_ddkst")
+
+[node name="ItemSlots" type="HBoxContainer" parent="PlayerUI" unique_id=1907421638]
+custom_minimum_size = Vector2(500, 50)
+layout_mode = 0
+offset_left = 1743.2827
+offset_top = 1552.239
+offset_right = 2243.2827
+offset_bottom = 1702.239
+scale = Vector2(1.5483284, 1.5483284)
+
+[node name="Item1" type="TextureButton" parent="PlayerUI/ItemSlots" unique_id=1944678912]
+visible = false
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+texture_normal = ExtResource("7_ddkst")
+
+[node name="Item2" type="TextureButton" parent="PlayerUI/ItemSlots" unique_id=2032869318]
+visible = false
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+texture_normal = ExtResource("7_ddkst")
+
+[node name="Item3" type="TextureButton" parent="PlayerUI/ItemSlots" unique_id=505404757]
+visible = false
+custom_minimum_size = Vector2(150, 150)
+layout_mode = 2
+texture_normal = ExtResource("7_ddkst")

@@ -18,9 +18,8 @@ var cam_target_direction: Vector2
 var group_cam_limits: PackedVector2Array
 
 var room_respawn_point: Vector2
-
-enum Items {GEM_MAGNET}
-var inventory: Array[Items] = []
+var inventory = [-1,-1,-1]
+var inventory_size: int = 1
 
 var current_sword_look = Vector2.ZERO
 var current_sword_speed = 20
@@ -37,12 +36,14 @@ var atk = atk_max;
 var is_inv = false
 var gems = 0
 var keys = 0
-var curse_cap = 500
+var curse_cap = 300
 
 var attacking = false
 var attacking_cooldown = false
 var atk_angl = 0.0
 var atk_angl_init = 0.0
+
+@export var active_weapon: Gacha.GachaWeapons
 
 var perma_shield = false
 
@@ -51,13 +52,41 @@ var fire_cooldown = false
 var blast_node = preload("res://entities/player/sword_blast.tscn")
 var player_ui_rsrc = preload("res://entities/player/player_ui.tscn")
 var cam_is_moving: bool = false
+var item_slots
 
 func _ready() -> void:
+	active_weapon = Persistant.persistant_data["active_weapon"] as Gacha.GachaWeapons
+	
+	$Spear/CollisionShape2D.disabled = true
+	
+	if active_weapon != Gacha.GachaWeapons.SwordAndShield:
+		$Sword.hide()
+		$Sword/CollisionShape2D.disabled = true
+		
+		$Shield.hide()
+		$Shield/CollisionShape2D.disabled = true
+	
+	match active_weapon:
+		Gacha.GachaWeapons.GachaSpear:
+			$Spear/CollisionShape2D.disabled = false
+			$Spear.visible = true
+			$Spear.spear_owner = self
+			$Spear.throw_height = 200
+			$Spear/AnimationPlayer.speed_scale = 1.5
+	
+	match Persistant.persistant_data["active_skin"] as Gacha.GachaSkins:
+		_:
+			pass
+	
 	Globals.player_node = self
 	if Globals.player_ui == null:
 		var player_ui = player_ui_rsrc.instantiate()
 		get_parent().get_parent().add_child.call_deferred(player_ui)
 		Globals.player_ui = player_ui
+	
+	item_slots = Globals.player_ui.get_node("PlayerUI/ItemSlots")
+	for item_slot_idx in range(0,inventory_size):
+		item_slots.get_children()[item_slot_idx].visible = true
 	
 	super()
 	
@@ -66,6 +95,7 @@ func _ready() -> void:
 		hp = Globals.player_current_hp
 		perma_shield = Globals.perm_shield
 		curse_cap = Globals.curse_cap
+		inventory = Globals.inventory
 	else:
 		hp = max_hp
 		atk = atk_max
@@ -104,49 +134,74 @@ func _process(delta: float) -> void:
 	# curse level effects
 	if (gems >= curse_cap * 0.70):
 		can_jump = false
-	
-	if (gems >= curse_cap * 0.35) && not perma_shield:
-		$Shield.set_collision_layer_value(4, false)
-		$Shield.visible = false
-	else:
-		$Shield.set_collision_layer_value(4, true)
-		$Shield.visible = true
-	
-	if $Shield.visible == false && perma_shield:
-		$Shield.set_collision_layer_value(4, true)
-		$Shield.visible = true
-	
-	can_fire = !(gems >= curse_cap * 0.25)
-	
-
-	# attack blast
-	if Input.is_action_pressed("fire_btn"):
-		if can_fire && !fire_cooldown:
-			Sounds.bullet.play()
-			Sounds.bullet.position = global_position
-			var blast = blast_node.instantiate()
-			blast.direction = current_sword_look.normalized()
-			blast.rotation = $Sword.rotation
-			blast.position = $Sword.global_position + blast.direction * 200
-			get_parent().add_child(blast)
-			fire_cooldown = true
-			$blast_timer.start()
-			
-	# attack sword
-	if Input.is_action_pressed("hit_btn") && !attacking && !attacking_cooldown:
-		attacking = true
-		attacking_cooldown = true
-		atk_angl_init = (get_local_mouse_position() - $Sword.position).angle()
-		atk_angl = atk_angl_init - PI / 2.5
-		Sounds.sword.play()
-		Sounds.sword.position = global_position
 		
+	can_fire = !(gems >= curse_cap * 0.25)
+		
+	match active_weapon:
+		Gacha.GachaWeapons.SwordAndShield:
+			
+			if (gems >= curse_cap * 0.35) && not perma_shield:
+				$Shield.set_collision_layer_value(4, false)
+				$Shield.visible = false
+			else:
+				$Shield.set_collision_layer_value(4, true)
+				$Shield.visible = true
+			
+			if $Shield.visible == false && perma_shield:
+				$Shield.set_collision_layer_value(4, true)
+				$Shield.visible = true
+		
+
+			# attack blast
+			if Input.is_action_pressed("fire_btn"):
+				if can_fire && !fire_cooldown:
+					Sounds.bullet.play()
+					Sounds.bullet.position = global_position
+					var blast = blast_node.instantiate()
+					blast.direction = current_sword_look.normalized()
+					blast.rotation = $Sword.rotation
+					blast.position = $Sword.global_position + blast.direction * 200
+					get_parent().add_child(blast)
+					fire_cooldown = true
+					$blast_timer.start()
+					
+			# attack sword
+			if Input.is_action_pressed("hit_btn") && !attacking && !attacking_cooldown:
+				attacking = true
+				attacking_cooldown = true
+				atk_angl_init = (get_local_mouse_position() - $Sword.position).angle()
+				atk_angl = atk_angl_init - PI / 2.5
+				Sounds.sword.play()
+				Sounds.sword.position = global_position
+				
+		Gacha.GachaWeapons.GachaSpear:
+			if has_node("Spear"):
+				$Spear/CollisionShape2D.disabled = !$Spear.being_jabbed && !$Spear/AnimationPlayer.is_playing()
+				
+				# attack spear jab
+				if Input.is_action_pressed("hit_btn") && !$Spear.being_thrown && !$Spear.being_jabbed:
+					$Spear.init_jab(to_global(get_local_mouse_position()))
+				
+				# attack throw spear
+				if Input.is_action_pressed("fire_btn"):
+					if can_fire && !fire_cooldown && !$Spear.being_thrown && !$Spear.being_jabbed:
+						$Spear.init_throw(to_global(get_local_mouse_position()))
+						fire_cooldown = true
+						$blast_timer.start()
 	# jump
 	if Input.is_action_just_pressed("ui_accept") && !in_air && can_jump:
 		in_air = true
 		
 		
 func _physics_process(delta: float) -> void:
+	# use items
+	if Input.is_action_just_pressed("item_1"):
+		use_item(0)
+	if Input.is_action_just_pressed("item_2"):
+		use_item(1)
+	if Input.is_action_just_pressed("item_3"):
+		use_item(2)
+	
 	# movement and cam
 	var direction := Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
 	
@@ -158,14 +213,14 @@ func _physics_process(delta: float) -> void:
 		$sprite.play("side")
 		$sprite.flip_h = direction.x > 0
 
-	if direction:
+	if direction || has_status_effect(CharEntity.StatusEffect.BOUNCY):
 		velocity = direction * SPEED * speed_multiply
-		cam_target_distance = move_toward(cam_target_distance, MAX_CAM_DIST, CAM_SPEED * speed_multiply * delta)
+		cam_target_distance = move_toward(cam_target_distance, MAX_CAM_DIST, CAM_SPEED * abs(speed_multiply) * delta)
 		cam_target_distance = clamp(cam_target_distance, -MAX_CAM_DIST, MAX_CAM_DIST)
-		cam_target_direction = direction
+		cam_target_direction = (direction * speed_multiply).normalized()
 	else:
-		velocity.x = move_toward(velocity.x, 0, SPEED * speed_multiply)
-		velocity.y = move_toward(velocity.y, 0, SPEED * speed_multiply)
+		velocity.x = move_toward(velocity.x, 0, SPEED * abs(speed_multiply))
+		velocity.y = move_toward(velocity.y, 0, SPEED * abs(speed_multiply))
 	
 	if should_change_screen_target:
 		velocity = Vector2.ZERO
@@ -182,32 +237,45 @@ func _physics_process(delta: float) -> void:
 				$Camera2D.limit_enabled = true
 	else:
 		var cam_target = global_position + cam_target_direction * cam_target_distance
-		$Camera2D.global_position.x = move_toward($Camera2D.global_position.x, cam_target.x, CAM_SPEED * speed_multiply * delta)
-		$Camera2D.global_position.y = move_toward($Camera2D.global_position.y, cam_target.y, CAM_SPEED * speed_multiply * delta)
+		$Camera2D.global_position.x = move_toward($Camera2D.global_position.x, cam_target.x, CAM_SPEED * abs(speed_multiply) * delta)
+		$Camera2D.global_position.y = move_toward($Camera2D.global_position.y, cam_target.y, CAM_SPEED * abs(speed_multiply) * delta)
 		
 	var target_look_coord = get_local_mouse_position() # around player
 	# get_global_mouse_position() - $Camera2D.get_screen_center_position() # around screen center
 	
-	# sword anime
-	if !attacking:
-		mouse_speed = max(mouse_speed, Input.get_last_mouse_velocity().length())
-		
-		current_sword_speed = move_toward(current_sword_speed, mouse_speed, 5)
-		
-		current_sword_look.x = move_toward(current_sword_look.x, target_look_coord.x, current_sword_speed)
-		current_sword_look.y = move_toward(current_sword_look.y, target_look_coord.y, current_sword_speed)
-	else:
-		atk_angl += 0.15 * speed_multiply
-		current_sword_look = Vector2(cos(atk_angl), sin(atk_angl))
-		if atk_angl > atk_angl_init + PI / 2.5:
-			$atk_timer.start()
-			attacking = false
+	match active_weapon:
+		Gacha.GachaWeapons.SwordAndShield:
+			# sword anime
+			if !attacking:
+				mouse_speed = max(mouse_speed, Input.get_last_mouse_velocity().length())
+				
+				current_sword_speed = move_toward(current_sword_speed, mouse_speed, 5)
+				
+				current_sword_look.x = move_toward(current_sword_look.x, target_look_coord.x, current_sword_speed)
+				current_sword_look.y = move_toward(current_sword_look.y, target_look_coord.y, current_sword_speed)
+			else:
+				if has_status_effect(StatusEffect.TINY):
+					atk_angl += 0.15 * 1.5
+				else:
+					atk_angl += 0.15 * abs(speed_multiply)
+				current_sword_look = Vector2(cos(atk_angl), sin(atk_angl))
+				if atk_angl > atk_angl_init + PI / 2.5:
+					$atk_timer.start()
+					attacking = false
+		Gacha.GachaWeapons.GachaSpear:
+			
+			if has_node("Spear"):
+				$Spear.look_at(to_global(target_look_coord))
+				$Spear.position = $sprite.position + target_look_coord.normalized() * 120
+	
+	set_collision_mask_value(2, !has_status_effect(CharEntity.StatusEffect.HOVER))
 	
 	# 1 wall, 2 hole, 3 enemy, 4 bullet, 5 player detection
 	# jump anim
 	if in_air:
 		set_collision_mask_value(2, false) # let pass through jumpable
 		set_collision_layer_value(2, false)
+		set_collision_mask_value(8, false)
 		set_collision_layer_value(4, false) # let pass through, bullets
 		if air_t < PI / 2:
 			air_t += 4 * delta
@@ -224,15 +292,19 @@ func _physics_process(delta: float) -> void:
 			in_air = false
 			set_collision_mask_value(2, true)
 			set_collision_layer_value(2, true)
+			set_collision_mask_value(8, true)
 			set_collision_layer_value(4, true) # let pass through, enemies
 			
 			air_t = 0
 
 	#sword layering	& direction
-	if fposmod($Sword.rotation, PI * 2) < PI * 4 / 5:
-		$Sword.z_index = 2
-	else:
-		$Sword.z_index = 0
+	if has_node("Spear"):
+		if fposmod($Spear.rotation, PI * 2) < PI * 4 / 5:
+			$Sword.z_index = 2
+			$Spear.z_index = 2
+		else:
+			$Sword.z_index = 0
+			$Spear.z_index = 0
 
 	$Sword.look_at(to_global(current_sword_look + $Sword.position))
 	$Shield.look_at(to_global(target_look_coord))
@@ -248,14 +320,38 @@ func _on_atk_timer_timeout() -> void:
 func _on_sword_body_entered(body: Node2D) -> void:
 	if attacking:
 		if body is CharEntity && !(body is Player):
-			body.knockback(global_position.direction_to(body.global_position) * knockback_strength)
+			if is_bouncer:
+				body.knockback(global_position.direction_to(body.global_position) * knockback_strength)
+				body.apply_status_effect(CharEntity.StatusEffect.BOUNCY)
+			else:
+				body.knockback(global_position.direction_to(body.global_position) * knockback_strength)
+				
 			body.damage(atk)
 
-func has_item(item: Items) -> bool:
+func has_item(item: DungeonItems.Items) -> bool:
 	return item in inventory
 
-func add_item(item: Items):
-	inventory.append(item)
+func use_item(index: int):
+	var item: DungeonItems.Items = inventory[index] as DungeonItems.Items
+	DungeonItems.use_item(item, self)
+			
+	if Globals.player_ui && item != -1:
+		item_slots = Globals.player_ui.get_node("PlayerUI/ItemSlots")
+		item_slots.get_children()[index].texture_normal = DungeonItems.empty_item_slot_texture
+		
+	inventory[index] = -1
+
+func add_item(item: DungeonItems.Items):
+	var open_index = inventory.find(-1)
+	if open_index != -1:
+		inventory[open_index] = item
+		if Globals.player_ui:
+			item_slots = Globals.player_ui.get_node("PlayerUI/ItemSlots")
+			item_slots.get_children()[open_index].texture_normal = DungeonItems.get_item_texture(item)
+	Globals.inventory = inventory
+	
+func is_inventory_full() -> bool:
+	return 3 - inventory.count(-1) >= inventory_size
 
 func _on_got_hit(hp: Variant) -> void:
 	set_collision_layer_value(3, false) # let pass through enemies

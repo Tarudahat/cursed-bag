@@ -2,7 +2,6 @@ extends CharEnemy
 
 const SPEED = 300.0
 const JUMP_VELOCITY = -400.0
-var agro = false
 var plyr = null
 
 var init_pos

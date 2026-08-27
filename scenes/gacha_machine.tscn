@@ -1,0 +1,91 @@
+[gd_scene format=3 uid="uid://cdu46wmdyg1pg"]
+
+[ext_resource type="Script" uid="uid://db16yypisepxx" path="res://scenes/gacha_machine.gd" id="1_im7vv"]
+[ext_resource type="Texture2D" uid="uid://lgvj7uuewtk5" path="res://assets/items/dia1.png" id="2_im7vv"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ebv5y"]
+
+[node name="GachaMachineScene" type="Node2D" unique_id=577216753]
+script = ExtResource("1_im7vv")
+
+[node name="gachamachine" type="StaticBody2D" parent="." unique_id=1393747304]
+position = Vector2(0, -184)
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="gachamachine" unique_id=584696044]
+position = Vector2(0, -41)
+scale = Vector2(1.8, 1.8)
+polygon = PackedVector2Array(-48.888893, -208.33334, 44.444447, -208.33334, 128.8889, -177.22223, 168.8889, -132.7778, 191.11111, -53.33333, 191.11111, 44.44445, 160, 128, 128, 160, 71.111115, 178.33334, 7.0079346, 300.44617, -74.99999, 380.62494, -174.99998, 380.62494, -174.99998, 290.62497, -49.999996, 200.62497, -71.111115, 178.33334, -128, 160, -128, 160, -168, 128, -192, 64, -192, -40, -173.33334, -128.33334, -124.44445, -177.22223, -48.888893, -208.33334, -88.88889, -337.22223, -346.6667, -61.666664, -168, 200, -204.99998, 425.62494, 24.999998, 405.62494, 192, 200, 377.7778, -43.888893, 111.111115, -332.7778, -88.88889, -337.22223)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=477968106]
+
+[node name="Button" type="Button" parent="." unique_id=696854064]
+offset_left = 104.0
+offset_top = 248.0
+offset_right = 153.0
+offset_bottom = 279.0
+scale = Vector2(5.356189, 3.4047093)
+text = "ROLL"
+
+[node name="Label" type="Label" parent="Button" unique_id=1057069213]
+layout_mode = 0
+offset_left = 10.455196
+offset_top = 32.895615
+offset_right = 50.455196
+offset_bottom = 55.895615
+text = "150"
+
+[node name="Button2" type="Button" parent="." unique_id=1445793309]
+offset_left = -824.0
+offset_top = 392.0
+offset_right = -774.0
+offset_bottom = 423.0
+scale = Vector2(5.356189, 3.4047093)
+text = "BACK"
+
+[node name="StaticBody2D" type="StaticBody2D" parent="." unique_id=358175016]
+position = Vector2(0, 136)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D" unique_id=1214040423]
+position = Vector2(4.7683716e-07, -7.9999995)
+scale = Vector2(27.280003, 1)
+shape = SubResource("RectangleShape2D_ebv5y")
+
+[node name="GachaBalls" type="Node2D" parent="." unique_id=2089207003]
+position = Vector2(0, -312)
+
+[node name="rumbling_timer" type="Timer" parent="." unique_id=1497492224]
+wait_time = 3.5
+one_shot = true
+
+[node name="outnode" type="Node2D" parent="." unique_id=1124190520]
+position = Vector2(-32, 224)
+
+[node name="waitabit" type="Timer" parent="." unique_id=897278811]
+wait_time = 0.7
+one_shot = true
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=887405768]
+position = Vector2(-896, -552)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("2_im7vv")
+
+[node name="Label" type="Label" parent="Sprite2D" unique_id=1928357872]
+offset_left = 127.99999
+offset_top = -63.999996
+offset_right = 168.0
+offset_bottom = -40.999996
+scale = Vector2(6.038235, 6.038235)
+text = "300"
+
+[node name="Label" type="Label" parent="." unique_id=798956204]
+offset_left = -464.00003
+offset_top = 456.0
+offset_right = -392.00003
+offset_bottom = 479.0
+scale = Vector2(5.6749, 5.6749)
+text = "ITEM GET"
+
+[connection signal="button_up" from="Button" to="." method="_on_button_button_up"]
+[connection signal="button_up" from="Button2" to="." method="_on_button_2_button_up"]
+[connection signal="timeout" from="rumbling_timer" to="." method="_on_rumbling_timer_timeout"]
+[connection signal="timeout" from="waitabit" to="." method="_on_waitabit_timeout"]

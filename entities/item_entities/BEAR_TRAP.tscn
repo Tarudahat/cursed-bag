@@ -1,0 +1,54 @@
+[gd_scene format=3 uid="uid://bgm13q7srkm07"]
+
+[ext_resource type="Script" uid="uid://bd4xcckaopnxk" path="res://entities/item_entities/BEAR_TRAP.gd" id="1_pmcw7"]
+[ext_resource type="Texture2D" uid="uid://6r8lmwon3gbp" path="res://assets/items/pot_broken.png" id="2_urdpi"]
+[ext_resource type="Texture2D" uid="uid://jcnm5cqojx0s" path="res://assets/items/pot.png" id="3_lem8c"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_l88fr"]
+atlas = ExtResource("2_urdpi")
+region = Rect2(0, 0, 285, 265)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6q36w"]
+atlas = ExtResource("3_lem8c")
+region = Rect2(0, 0, 285, 265)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_lg7ud"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_l88fr")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6q36w")
+}],
+"loop": true,
+"name": &"trap",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_6q36w"]
+radius = 80.09994
+
+[node name="BearTrap" type="Area2D" unique_id=506745864]
+collision_layer = 0
+collision_mask = 4
+script = ExtResource("1_pmcw7")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1518369725]
+sprite_frames = SubResource("SpriteFrames_lg7ud")
+frame_progress = 0.9504434
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1756862221]
+shape = SubResource("CircleShape2D_6q36w")
+
+[node name="DespawnTimer" type="Timer" parent="." unique_id=660377999]
+wait_time = 5.0
+one_shot = true
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="timeout" from="DespawnTimer" to="." method="_on_despawn_timer_timeout"]

@@ -1,16 +1,18 @@
 extends CharacterBody2D
 class_name CharEntity
 
-enum StatusEffect {STUN, POISON, SLOW, INSTANT_DEATH, BOUNCY, TINY}
+enum StatusEffect {STUN, POISON, SLOW, INSTANT_DEATH, BOUNCY, TINY, REVERSE, HOVER, BOUNCER}
 var has_tick_timer: Dictionary[StatusEffect, bool] = {StatusEffect.POISON: true}
 
 @export var hp: int = 10
 var max_hp = hp
+
 @export var knockback_strength: float = 3750
 @export var knockback_resistance: float = 0
 @export var active_status_effects: Array[StatusEffect] = []
 @export var default_status_effect_behaviours: bool = true
 
+@export var immortal: bool = false
 @export var interacts_with_floor: bool = true
 @export var should_free_on_fall_hole: bool = true
 @export var auto_free_on_death: bool = true
@@ -47,6 +49,8 @@ signal fell_into_hole
 signal got_status_effect(status_effect, duration)
 signal got_status_ticked(status_effect)
 signal status_effect_cleared(status_effect)
+
+var is_bouncer: bool = false
 
 func _ready() -> void:
 	max_hp = hp
@@ -95,7 +99,7 @@ func damage(amount: int) -> void:
 		emit_signal("got_hit", hp)
 		
 		# signal death on hp death
-		if hp <= 0 || has_status_effect(StatusEffect.INSTANT_DEATH):
+		if !immortal && (hp <= 0 || has_status_effect(StatusEffect.INSTANT_DEATH)):
 			emit_signal("died")
 			
 			if auto_free_on_death:
@@ -119,9 +123,14 @@ func apply_status_effect(status_effect: StatusEffect, duration: float = status_d
 				StatusEffect.SLOW:
 					speed_multiply = 0.3
 				StatusEffect.TINY:
-					scale = default_scale * 0.65
+					scale = default_scale * 0.40
+					speed_multiply = 0.75
 				StatusEffect.STUN:
 					speed_multiply = 0.0
+				StatusEffect.REVERSE:
+					speed_multiply = -1.0
+				StatusEffect.BOUNCER:
+					is_bouncer = true
 
 	status_timers[status_effect].wait_time = duration
 	status_timers[status_effect].start()
@@ -143,6 +152,12 @@ func clear_status_effect(status_effect: StatusEffect) -> void:
 					speed_multiply = 1.0
 				StatusEffect.TINY:
 					scale = default_scale
+					speed_multiply = 1.0
+				StatusEffect.REVERSE:
+					speed_multiply = abs(speed_multiply)
+				StatusEffect.BOUNCER:
+					is_bouncer = false
+
 
 		active_status_effects.erase(status_effect)
 		emit_signal("status_effect_cleared", status_effect)
@@ -178,9 +193,9 @@ func char_entity_move_and_slide() -> bool:
 				var tile_pos = Globals.level_node.global_to_tilemap(collision.get_position())
 				hole_global_pos = Globals.level_node.tilemap_to_global(tile_pos)
 				var tile_data = tilemap_layer.get_cell_tile_data(tile_pos)
-				var is_hole = tile_data.has_custom_data("is_hole") && tile_data.get_custom_data("is_hole")
+				var is_hole = tile_data && tile_data.has_custom_data("is_hole") && tile_data.get_custom_data("is_hole")
 
-				if is_hole && !falling_into_hole:
+				if !has_status_effect(StatusEffect.HOVER) && is_hole && !falling_into_hole:
 					falling_into_hole = true
 					var has_anime_player = has_node("AnimationPlayer")
 
@@ -195,8 +210,9 @@ func char_entity_move_and_slide() -> bool:
 					falling_timer.wait_time = 1.0
 				else:
 					if is_bouncy:
-						knockback_velocity = (collision.get_normal().bounce((knockback_velocity * Vector2(randf_range(-1, 1), randf_range(-1, 1))).normalized())) * knockback_velocity.length() * 1.05
-
+						knockback_velocity = (collision.get_normal().bounce((knockback_velocity).normalized())) * knockback_velocity.length() 
+						#* Vector2(randf_range(-1, 1), randf_range(-1, 1))
+						
 	if should_free:
 		queue_free()
 	if should_emit_fell:

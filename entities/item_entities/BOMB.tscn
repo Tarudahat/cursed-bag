@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://boxu7wcg2efbj"]
+
+[ext_resource type="Script" uid="uid://xij5yc8lubal" path="res://entities/item_entities/bomb.gd" id="1_6dydl"]
+[ext_resource type="Texture2D" uid="uid://cmwhokuatyj0n" path="res://assets/items/dia1_02.png" id="2_isxg8"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_thftc"]
+atlas = ExtResource("2_isxg8")
+region = Rect2(0, 0, 117, 117)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2tqiv"]
+atlas = ExtResource("2_isxg8")
+region = Rect2(117, 0, 117, 117)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_8lxns"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_thftc")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2tqiv")
+}],
+"loop": true,
+"name": &"default",
+"speed": 2.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rm68t"]
+radius = 54.0
+
+[node name="BOMB" type="StaticBody2D" unique_id=253084891]
+collision_layer = 0
+collision_mask = 0
+script = ExtResource("1_6dydl")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1250813236]
+sprite_frames = SubResource("SpriteFrames_8lxns")
+frame_progress = 0.1703799
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=447485684]
+light_mask = 0
+visibility_layer = 0
+shape = SubResource("CircleShape2D_rm68t")
+
+[node name="Timer" type="Timer" parent="." unique_id=1536454537]
+wait_time = 2.3
+one_shot = true
+autostart = true
+
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

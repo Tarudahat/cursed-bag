@@ -4,11 +4,15 @@ var current_level = 0
 var level_room_count = [3, 7, 12, 15, 25]
 var lvl = preload("res://scenes/level.tscn")
 var gmov = preload("res://scenes/gameover.tscn")
+
 var tit = preload("res://scenes/titlescreen.tscn")
+var loadout = preload("res://scenes/loadout.tscn")
+var gacha = preload("res://scenes/gacha_machine.tscn")
 var win = preload("res://scenes/win.tscn")
 
 var player_gems = -1
 var player_current_hp = -1
+var inventory = [-1,-1,-1]
 var perm_shield = false
 var curse_cap = -1
 var minimap = null
@@ -62,19 +66,40 @@ func game_over():
 		player_ui.queue_free()
 	Sounds.music.stop()
 	perm_shield = false
+	inventory = [-1,-1,-1]
 	# get the parent of level
 	if current_level_node:
 		current_level_node.queue_free()
 			
 	get_tree().get_root().add_child.call_deferred(gmov.instantiate())
 
+func game_quit():
+	if player_ui != null:
+		player_ui.queue_free()
+	Sounds.music.stop()
+	perm_shield = false
+	inventory = [-1,-1,-1]
+	
+	# get the parent of level
+	if current_level_node:
+		current_level_node.queue_free()
+			
+	title_screen()
 
 func title_screen():
 	get_tree().get_root().add_child.call_deferred(tit.instantiate())
 	
+func loadout_screen():
+	get_tree().get_root().add_child.call_deferred(loadout.instantiate())
+	
+func gacha_screen():
+	get_tree().get_root().add_child.call_deferred(gacha.instantiate())
+	
 func win_screen():
 	if player_ui != null:
 		player_ui.queue_free()
+		player_ui = null
+		
 	perm_shield = false
 	# get the parent of level
 	var levelll = null

@@ -1,0 +1,37 @@
+[gd_scene format=3 uid="uid://j4o1qhqcsji4"]
+
+[ext_resource type="Script" uid="uid://bx5gh2xv8uvqb" path="res://entities/enemies/mage_beam.gd" id="1_mghd3"]
+[ext_resource type="Texture2D" uid="uid://c3owdgmvphvdr" path="res://assets/player/swbl.png" id="2_rdfk3"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_rdfk3"]
+radius = 96.332756
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4gtsu"]
+atlas = ExtResource("2_rdfk3")
+region = Rect2(0, 0, 276, 262)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_q0vt3"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4gtsu")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="Area2D" type="Area2D" unique_id=2076856319]
+collision_layer = 8
+collision_mask = 13
+script = ExtResource("1_mghd3")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=222761145]
+shape = SubResource("CircleShape2D_rdfk3")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1250982626]
+modulate = Color(0.59000057, 1, 0.5684909, 1)
+scale = Vector2(0.5, 0.5)
+sprite_frames = SubResource("SpriteFrames_q0vt3")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]

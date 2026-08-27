@@ -1,0 +1,108 @@
+[gd_scene format=3 uid="uid://cciyutjga0d27"]
+
+[ext_resource type="Script" uid="uid://dadxhj5svmeef" path="res://entities/enemies/snake.gd" id="1_ou7vw"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="2_56ou3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_56ou3"]
+atlas = ExtResource("2_56ou3")
+region = Rect2(64, 42, 64, 42)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g34um"]
+atlas = ExtResource("2_56ou3")
+region = Rect2(64, 84, 64, 42)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kywox"]
+atlas = ExtResource("2_56ou3")
+region = Rect2(0, 75, 128, 25)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_krq4j"]
+atlas = ExtResource("2_56ou3")
+region = Rect2(0, 50, 128, 25)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qes55"]
+atlas = ExtResource("2_56ou3")
+region = Rect2(0, 25, 128, 25)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_g34um"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_56ou3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g34um")
+}],
+"loop": false,
+"name": &"bite",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kywox")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_krq4j")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qes55")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_56ou3"]
+radius = 24.0
+height = 224.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_kywox"]
+radius = 440.2908
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_krq4j"]
+radius = 144.88617
+
+[node name="Snake" type="CharacterBody2D" unique_id=1903271834]
+collision_layer = 4
+collision_mask = 135
+slide_on_ceiling = false
+script = ExtResource("1_ou7vw")
+metadata/_custom_type_script = "uid://dhalpxunvn8ux"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=341425236]
+position = Vector2(-40, 0)
+scale = Vector2(1.8, 1.8)
+sprite_frames = SubResource("SpriteFrames_g34um")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1120893224]
+position = Vector2(-40, 0)
+rotation = 1.5707964
+shape = SubResource("CapsuleShape2D_56ou3")
+
+[node name="FarRange" type="Area2D" parent="." unique_id=22292168]
+collision_layer = 0
+collision_mask = 16
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="FarRange" unique_id=548759163]
+shape = SubResource("CircleShape2D_kywox")
+
+[node name="CloseRange" type="Area2D" parent="." unique_id=1356788812]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="CloseRange" unique_id=525778641]
+position = Vector2(72, 0)
+shape = SubResource("CircleShape2D_krq4j")
+disabled = true
+
+[node name="WanderTimer" type="Timer" parent="." unique_id=1389119037]
+wait_time = 3.0
+autostart = true
+
+[node name="BiteTimer" type="Timer" parent="." unique_id=622002429]
+one_shot = true
+
+[connection signal="animation_finished" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_finished"]
+[connection signal="body_entered" from="FarRange" to="." method="_on_far_range_body_entered"]
+[connection signal="body_exited" from="FarRange" to="." method="_on_far_range_body_exited"]
+[connection signal="body_entered" from="CloseRange" to="." method="_on_close_range_body_entered"]
+[connection signal="body_exited" from="CloseRange" to="." method="_on_close_range_body_exited"]
+[connection signal="timeout" from="WanderTimer" to="." method="_on_wander_timer_timeout"]
+[connection signal="timeout" from="BiteTimer" to="." method="_on_bite_timer_timeout"]

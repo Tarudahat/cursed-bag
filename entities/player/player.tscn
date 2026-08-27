@@ -4,6 +4,7 @@
 [ext_resource type="Shader" uid="uid://dtlquc4l1hh40" path="res://assets/player.gdshader" id="1_e4p34"]
 [ext_resource type="Texture2D" uid="uid://crbo5an430kmp" path="res://assets/player/sword.png" id="2_rfe5m"]
 [ext_resource type="Texture2D" uid="uid://3kyr4gu143lh" path="res://assets/player/shield.png" id="3_q0i8f"]
+[ext_resource type="PackedScene" uid="uid://dqjsnom7klwtw" path="res://entities/spear.tscn" id="9_bectd"]
 [ext_resource type="Texture2D" uid="uid://ce24ixxxy7vnx" path="res://assets/player/shadow.png" id="10_q0i8f"]
 [ext_resource type="Texture2D" uid="uid://djprlh7kyjjxa" path="res://assets/player/hero_back.png" id="11_kdgjc"]
 [ext_resource type="Texture2D" uid="uid://uv076jj83h6j" path="res://assets/player/hero_front.png" id="12_q0i8f"]
@@ -85,7 +86,7 @@ animations = [{
 [node name="Player" type="CharacterBody2D" unique_id=1507622502]
 z_index = 1
 collision_layer = 22
-collision_mask = 23
+collision_mask = 151
 platform_on_leave = 2
 script = ExtResource("1_26q78")
 hp = 250
@@ -105,10 +106,14 @@ position_smoothing_speed = 100.0
 
 [node name="AudioListener2D" type="AudioListener2D" parent="." unique_id=377737936]
 
+[node name="Spear" parent="." unique_id=650557577 instance=ExtResource("9_bectd")]
+visible = false
+speed = 2.5
+
 [node name="Sword" type="Area2D" parent="." unique_id=1763883276]
 scale = Vector2(0.7419884, 0.7419884)
 collision_layer = 0
-collision_mask = 6
+collision_mask = 134
 
 [node name="Sprite2D" type="Sprite2D" parent="Sword" unique_id=1030752979]
 position = Vector2(258.76413, 0)

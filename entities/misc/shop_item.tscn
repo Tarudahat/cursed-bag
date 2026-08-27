@@ -1,0 +1,65 @@
+[gd_scene format=3 uid="uid://huio6r6mmyhy"]
+
+[ext_resource type="Script" uid="uid://c8mecio4u5pql" path="res://entities/misc/shop_item.gd" id="1_1vvu0"]
+[ext_resource type="Texture2D" uid="uid://bbwybnxnkjuwr" path="res://assets/UI/controls/keyboard/e.png" id="2_vmvxg"]
+[ext_resource type="Texture2D" uid="uid://bl63drgpe423w" path="res://icon.svg" id="3_kpspb"]
+[ext_resource type="Texture2D" uid="uid://rvnturtbhlhv" path="res://assets/UI/items/ANTIDOTE.png" id="3_vmvxg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_xohut"]
+radius = 297.7247
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ksgsa"]
+atlas = ExtResource("3_kpspb")
+region = Rect2(0, 0, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_g2ad8"]
+atlas = ExtResource("3_kpspb")
+region = Rect2(32, 64, 32, 64)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bcfw1"]
+atlas = ExtResource("3_kpspb")
+region = Rect2(64, 0, 32, 64)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_kwil0"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ksgsa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_g2ad8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bcfw1")
+}],
+"loop": true,
+"name": &"default",
+"speed": 3.5
+}]
+
+[node name="ShopItem" type="Area2D" unique_id=674252174]
+scale = Vector2(0.5, 0.5)
+collision_layer = 0
+collision_mask = 16
+script = ExtResource("1_1vvu0")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=733485952]
+position = Vector2(0, 96)
+shape = SubResource("CircleShape2D_xohut")
+
+[node name="interaction_icon" type="Sprite2D" parent="." unique_id=843953139]
+position = Vector2(0, -256)
+texture = ExtResource("2_vmvxg")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1219206107]
+position = Vector2(0, 152)
+scale = Vector2(4, 4)
+sprite_frames = SubResource("SpriteFrames_kwil0")
+frame_progress = 0.307989
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1187535907]
+scale = Vector2(1.8, 1.8)
+texture = ExtResource("3_vmvxg")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="body_exited" from="." to="." method="_on_body_exited"]

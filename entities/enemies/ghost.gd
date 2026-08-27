@@ -3,7 +3,6 @@ class_name Ghost
 
 var plyr = null
 var init_pos = Vector2.ZERO
-var agro = false
 var moving_to_target = false
 
 func _ready() -> void:
